@@ -1,98 +1,149 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>prova2</groupId>
-	<artifactId>prova2</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+    
+        <artifactId>Prova3</artifactId>
+        <groupId>Prova3</groupId>
 
-	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-	</properties>
 
-	<dependencies>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>42.4.0</version>
-		</dependency>
+    <dependencies>
 
-	</dependencies>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.1.4</version>
+        </dependency>
 
-	<build>
-		<pluginManagement>
-			<plugins>
-				<!--it creates database setup-->
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>sql-maven-plugin</artifactId>
-					<version>1.5</version>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.5.6</version>
+        </dependency>
 
-					<dependencies>
-						<!-- specify the dependent jdbc driver here -->
-						<dependency>
-							<groupId>org.postgresql</groupId>
-							<artifactId>postgresql</artifactId>
-							<version>42.4.0</version>
-						</dependency>
-					</dependencies>
+    </dependencies>
 
-					<!-- common configuration shared by all executions -->
-					<configuration>
-						<driver>org.postgresql.Driver</driver>
-						<url>jdbc:postgressql://localhost:5432</url>
-						<settingsKey>sensibleKey</settingsKey>
-					</configuration>
+    <build>
+        <plugins>
+            <!--it creates database setup-->
+            <plugin>
 
-					<executions>
-						<execution>
-							<id>drop-db-before-test-if-any</id>
-							<phase>compile</phase>
-							<goals>
-								<goal>execute</goal>
-							</goals>
-							<configuration>
-								<!-- need another database to drop the targeted one -->
-								<url>jdbc:postgressql://localhost:5432</url>
-								<autocommit>true</autocommit>
-								<sqlCommand>drop database SmartVax</sqlCommand>
-								<!-- ignore error when database is not avaiable -->
-								<onError>continue</onError>
-							</configuration>
-						</execution>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+                <version>1.5</version>
 
-						<execution>
-							<id>create-db</id>
-							<phase>compile</phase>
-							<goals>
-								<goal>execute</goal>
-							</goals>
-							<configuration>
-								<url>jdbc:postgressql://localhost:5432</url>
-								<!-- no transaction -->
-								<autocommit>true</autocommit>
-								<sqlCommand>create database SmartVax</sqlCommand>
-							</configuration>
-						</execution>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>42.1.4</version>
+                    </dependency>
+                </dependencies>
 
-						<execution>
-							<id>create-schema</id>
-							<phase>compile</phase>
-							<goals>
-								<goal>execute</goal>
-							</goals>
-							<configuration>
-								<url>jdbc:postgresql://localhost:5432/SmartVax</url>
-								<autocommit>true</autocommit>
-								<srcFiles>
-									<srcFile>src/main/sql/CreateDatabase.sql</srcFile>
-								</srcFiles>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+                <configuration>
+                    <driver>org.postgresql.Driver</driver>
+                    <url>jdbc:postgresql://localhost:5432/</url>
+                    <settingsKey>sensibleKey</settingsKey>
+                </configuration>
+
+                <executions>
+
+                    <execution>
+                        <id>drop database</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <url>jdbc:postgresql://localhost:5432/</url>
+                            <autocommit>true</autocommit>
+                            <sqlCommand>drop database if exists schoolibdb</sqlCommand>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>create database</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <url>jdbc:postgresql://localhost:5432/</url>
+                            <autocommit>true</autocommit>
+                            <sqlCommand>create database schoolibdb</sqlCommand>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>create database schemas</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <url>jdbc:postgresql://localhost:5432/schoolibdb</url>
+                            <autocommit>true</autocommit>
+                            <srcFiles>
+                                <srcFile>src/main/sql/CreateDatabase.sql</srcFile>
+                            </srcFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--create executable jar-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>serSchooLib</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>copy-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.parent.basedir}/jar</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>serSchoolib-1.0.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
 </project>
