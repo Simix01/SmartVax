@@ -37,8 +37,6 @@
 				<configuration>
 					<driver>org.postgresql.Driver</driver>
 					<url>jdbc:postgresql://localhost:5432/</url>
-					<username>postgres</username>
-					<password>Nhuari062799!</password>
 					<settingsKey>sensibleKey</settingsKey>
 				</configuration>
 
@@ -100,8 +98,8 @@
 						<configuration>
 							<mainClass>PROVA4</mainClass>
 							<arguments>
-								<argument>Hello</argument>
-								<argument>Developer!</argument>
+								<argument>${settings.user}</argument>
+								<argument>${settings.password}</argument>
 							</arguments>
 						</configuration>
 					</execution>
