@@ -77,8 +77,9 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	}
 
 	@Override
-	public void registraVaccinato() throws IOException {
+	public void registraVaccinato() throws IOException, SQLException {
 
+		ResultSet rSet;
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		String scelta2 = null;
 		String codiceFiscale;
@@ -133,10 +134,23 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 				}
 
 				Vaccinato vaccinato = new Vaccinato(nomeCentro, nome, cognome, codiceFiscale, vaccino);
-				
-				
-				
 
+				String queryString = "select exists" + "(select * from information_schema.tables\r\n"
+						+ "where table_schema = 'public' AND table_name = 'vaccinati_" + nomeCentro + "') as value";
+
+				Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+
+				ResultSet rs = stmt.executeQuery(queryString);
+
+				rs.next();
+				// System.out.print(rs.getBoolean("value"));
+
+				if(!rs.getBoolean("value")) {
+					
+				}
+				
+				
+				
 				System.out.println("Vuoi ancora registrare un vaccinato? s/n");
 				scelta2 = in.readLine();
 
@@ -168,8 +182,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		if (!rs.isBeforeFirst()) {
 			rs.close();
 			return false;
-		} 
-		else {
+		} else {
 			rs.close();
 			return true;
 		}

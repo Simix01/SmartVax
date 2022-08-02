@@ -31,18 +31,16 @@ public class PROVA4 {
 		ResultSet rs;
 
 
-		String queryControllo = "select nomecentro from centrivaccinali where nomecentro = 'Cmo'";
+		String queryControllo = "select exists"
+				+ "(select * from information_schema.tables\r\n"
+				+ "where table_schema = 'public' AND table_name = 'si_vaccin') as value";
+		
 		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 		rs = stmt.executeQuery(queryControllo);
 
-		if (!rs.isBeforeFirst())
-		{
-			System.out.print("No data");
-		}
-		else {
-			System.out.print("Si data");
-		}
+		rs.next();
+		System.out.print(rs.getBoolean("value"));
 
 		//CentroVaccinaleServiceImpl prova=new CentroVaccinaleServiceImpl(conn);
 		//prova.registraCentroVaccinale();
