@@ -19,11 +19,10 @@ CREATE TABLE CittadiniRegistrati (
 	Password varchar(50) NOT NULL
 );
 
-CREATE TABLE Si_vaccina (
+CREATE TABLE Vaccinazioni (
 	codFiscale varchar(16) NOT NULL,
 	idVaccinazione int NOT NULL,
-	nomeCentro varchar(50) REFERENCES CentriVaccinali(nomeCentro),
-	PRIMARY KEY(codFiscale, nomeCentro, idVaccinazione)
+	PRIMARY KEY(codFiscale, idVaccinazione)
 );
 
 CREATE TABLE EventiAvversi (

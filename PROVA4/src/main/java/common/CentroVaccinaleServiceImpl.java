@@ -175,7 +175,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 				preparedStmt.addBatch(queryAggiungiVaccinato);
 
-				String querySiVaccinaString = "INSERT INTO si_vaccina VALUES ('"+codiceFiscale+"',"+vaccinato.getId()+",'"+nomeCentro+"')";
+				String querySiVaccinaString = "INSERT INTO vaccinazioni VALUES ('"+codiceFiscale+"',"+vaccinato.getId()+")";
 
 				preparedStmt.addBatch(querySiVaccinaString);
 				
