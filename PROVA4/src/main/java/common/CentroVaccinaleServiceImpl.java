@@ -145,11 +145,26 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 				rs.next();
 				// System.out.print(rs.getBoolean("value"));
 
+						
 				if(!rs.getBoolean("value")) {
-					
+					String queryCrea = "CREATE TABLE Vaccinati_"+nomeCentro+" ("
+							+ "idVaccinazione serial PRIMARY KEY,"
+							+ "nomeVaccino varchar(20) NOT NULL,"
+							+ "dataVaccino date NOT NULL,"
+							+ "Nome VARCHAR(25) NOT NULL,"
+							+ "Cognome VARCHAR(40) NOT NULL,"
+							+ "codFiscale VARCHAR(16) NOT NULL,"
+							+ "nomeCentro varchar(50) REFERENCES CentriVaccinali(nomeCentro))";
+					PreparedStatement preparedStmt = conn.prepareStatement(queryCrea);
+					preparedStmt.execute();
 				}
 				
+				String queryAggiungiVaccinato = "INSERT INTO Vaccinati_"+nomeCentro+"(nomeVaccino,dataVaccino,Nome,Cognome,codFiscale,nomeCentro)"
+						+ " VALUES('"+vaccino+"',"+vaccinato.getData()+",'"+nome+"','"+cognome+"','"+codiceFiscale+"','"+nomeCentro+"')";
 				
+				PreparedStatement preparedStmt = conn.prepareStatement(queryAggiungiVaccinato);
+				preparedStmt.execute();
+				conn.close();
 				
 				System.out.println("Vuoi ancora registrare un vaccinato? s/n");
 				scelta2 = in.readLine();
