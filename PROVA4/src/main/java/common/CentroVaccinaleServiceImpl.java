@@ -4,10 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import centrivaccinaliServer.CentroVaccinale;
 import centrivaccinaliServer.Vaccinato;
@@ -57,7 +60,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 						+ "','" + sigProv + "'," + cap + ",'" + tipologia + "')";
 
 				PreparedStatement preparedStmt = conn.prepareStatement(queryInsert);
-				preparedStmt.execute();
+				preparedStmt.executeUpdate();
 				conn.close();
 
 				System.out.println(" ");
@@ -79,6 +82,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	@Override
 	public void registraVaccinato() throws IOException, SQLException {
 
+		Statement preparedStmt = conn.createStatement();
 		ResultSet rSet;
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		String scelta2 = null;
@@ -115,7 +119,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 				String vaccino = null;
 
-				System.out.println("Inserisci vaccino somministrato: 1=AstraZeneca 2=Moderna 3=Pfizer 4=J&J");
+				System.out.print("Inserisci vaccino somministrato: 1=AstraZeneca 2=Moderna 3=Pfizer 4=J&J: ");
 				int scelta = Integer.parseInt(in.readLine());
 
 				switch (scelta) {
@@ -136,43 +140,58 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 				Vaccinato vaccinato = new Vaccinato(nomeCentro, nome, cognome, codiceFiscale, vaccino);
 
 				String queryString = "select exists" + "(select * from information_schema.tables\r\n"
-						+ "where table_schema = 'public' AND table_name = 'vaccinati_" + nomeCentro + "') as value";
+						+ "where table_schema = 'public' AND table_name = 'vaccinati_" + nomeCentro.toLowerCase()
+						+ "') as value";
 
 				Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 				ResultSet rs = stmt.executeQuery(queryString);
 
 				rs.next();
-				// System.out.print(rs.getBoolean("value"));
+				boolean exist = rs.getBoolean("value");
+				rs.close();
+				if (!exist) {
 
-						
-				if(!rs.getBoolean("value")) {
-					String queryCrea = "CREATE TABLE Vaccinati_"+nomeCentro+" ("
-							+ "idVaccinazione serial PRIMARY KEY,"
-							+ "nomeVaccino varchar(20) NOT NULL,"
-							+ "dataVaccino date NOT NULL,"
-							+ "Nome VARCHAR(25) NOT NULL,"
-							+ "Cognome VARCHAR(40) NOT NULL,"
+					String queryCrea = "CREATE TABLE Vaccinati_" + nomeCentro + " (" + "idVaccinazione int PRIMARY KEY,"
+							+ "nomeVaccino varchar(20) NOT NULL," + "dataVaccino date NOT NULL,"
+							+ "Nome VARCHAR(25) NOT NULL," + "Cognome VARCHAR(40) NOT NULL,"
 							+ "codFiscale VARCHAR(16) NOT NULL,"
 							+ "nomeCentro varchar(50) REFERENCES CentriVaccinali(nomeCentro))";
-					PreparedStatement preparedStmt = conn.prepareStatement(queryCrea);
-					preparedStmt.execute();
+
+					preparedStmt.addBatch(queryCrea);
+
+					String queryConstraint = "ALTER TABLE Vaccinati_" + nomeCentro
+							+ " ADD CONSTRAINT cf_unique2 UNIQUE(codFiscale);";
+
+					preparedStmt.addBatch(queryConstraint);
 				}
+
+				Date date = new SimpleDateFormat("dd/MM/yyyy").parse(vaccinato.getData());
+
+				String queryAggiungiVaccinato = "INSERT INTO vaccinati_" + nomeCentro.toLowerCase()
+						+ "(idvaccinazione,nomevaccino,datavaccino,nome,cognome,codfiscale,nomecentro)" + " VALUES("
+						+ vaccinato.getId() + ",'" + vaccino + "','" + date + "','" + nome + "','" + cognome + "','"
+						+ codiceFiscale + "','" + nomeCentro + "')";
+
+				preparedStmt.addBatch(queryAggiungiVaccinato);
+
+				String querySiVaccinaString = "INSERT INTO si_vaccina VALUES ('"+codiceFiscale+"',"+vaccinato.getId()+",'"+nomeCentro+"')";
+
+				preparedStmt.addBatch(querySiVaccinaString);
 				
-				String queryAggiungiVaccinato = "INSERT INTO Vaccinati_"+nomeCentro+"(nomeVaccino,dataVaccino,Nome,Cognome,codFiscale,nomeCentro)"
-						+ " VALUES('"+vaccino+"',"+vaccinato.getData()+",'"+nome+"','"+cognome+"','"+codiceFiscale+"','"+nomeCentro+"')";
-				
-				PreparedStatement preparedStmt = conn.prepareStatement(queryAggiungiVaccinato);
-				preparedStmt.execute();
-				conn.close();
-				
+				preparedStmt.executeBatch();
+
 				System.out.println("Vuoi ancora registrare un vaccinato? s/n");
 				scelta2 = in.readLine();
 
 			} catch (IOException e) {
 				System.err.println("Si è verificato un errore.");
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		} while (scelta2.equals("s"));
+		conn.close();
 
 	}
 
@@ -189,7 +208,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	private boolean findCentroVac(String nomeCentro) throws SQLException {
 
-		String queryControllo = "select nomecentro from centrivaccinali where '" + nomeCentro + "'";
+		String queryControllo = "select nomecentro from centrivaccinali where nomecentro ='" + nomeCentro + "'";
 
 		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		ResultSet rs = stmt.executeQuery(queryControllo);

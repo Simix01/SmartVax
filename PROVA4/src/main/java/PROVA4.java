@@ -27,25 +27,10 @@ public class PROVA4 {
 
 		Connection conn = c.connect();
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		ResultSet rs;
-
-
-		String queryControllo = "select exists"
-				+ "(select * from information_schema.tables\r\n"
-				+ "where table_schema = 'public' AND table_name = 'si_vaccin') as value";
-		
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-
-		rs = stmt.executeQuery(queryControllo);
-
-		rs.next();
-		System.out.print(rs.getBoolean("value"));
-
-		//CentroVaccinaleServiceImpl prova=new CentroVaccinaleServiceImpl(conn);
+		CentroVaccinaleServiceImpl prova = new CentroVaccinaleServiceImpl(conn);
 		//prova.registraCentroVaccinale();
-		
-		
+
+		prova.registraVaccinato();
 
 	}
 

@@ -19,20 +19,11 @@ CREATE TABLE CittadiniRegistrati (
 	Password varchar(50) NOT NULL
 );
 
-ALTER TABLE CittadiniRegistrati ADD CONSTRAINT mail_unique
-UNIQUE(Mail);
-
-ALTER TABLE CittadiniRegistrati ADD CONSTRAINT user_unique
-UNIQUE(Username);
-
-ALTER TABLE CittadiniRegistrati ADD CONSTRAINT cf_unique
-UNIQUE(codFiscale);
-
 CREATE TABLE Si_vaccina (
-	userId int REFERENCES CittadiniRegistrati(userId),
+	codFiscale varchar(16) NOT NULL,
 	idVaccinazione int NOT NULL,
 	nomeCentro varchar(50) REFERENCES CentriVaccinali(nomeCentro),
-	PRIMARY KEY(userId, nomeCentro, idVaccinazione)
+	PRIMARY KEY(codFiscale, nomeCentro, idVaccinazione)
 );
 
 CREATE TABLE EventiAvversi (
@@ -41,4 +32,15 @@ CREATE TABLE EventiAvversi (
 	valoreGravita int NOT NULL,
 	Commento varchar(255),
 	nomeCentro varchar(50) REFERENCES CentriVaccinali(nomeCentro)
-)	
+);
+
+ALTER TABLE CittadiniRegistrati ADD CONSTRAINT mail_unique
+UNIQUE(Mail);
+
+ALTER TABLE CittadiniRegistrati ADD CONSTRAINT user_unique
+UNIQUE(Username);
+
+ALTER TABLE CittadiniRegistrati ADD CONSTRAINT cf_unique1
+UNIQUE(codFiscale);
+
+	
