@@ -1,4 +1,4 @@
-CREATE TABLE CentriVaccinali(
+CREATE TABLE CentriVaccinali (
 	nomeCentro varchar(50) PRIMARY KEY,
 	tipoLuogo varchar(10) NOT NULL,
 	nomeLuogo varchar (50) NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE CentriVaccinali(
 	Tipologia varchar (15) NOT NULL
 );
 
-CREATE TABLE CittadiniRegistrati(
+CREATE TABLE CittadiniRegistrati (
 	userId serial PRIMARY KEY,
 	Nome varchar(25) NOT NULL,
 	Cognome varchar(40) NOT NULL,
@@ -19,26 +19,26 @@ CREATE TABLE CittadiniRegistrati(
 	Password varchar(50) NOT NULL
 );
 
-CREATE TABLE Si_Vaccina(
-	userId int REFERENCES CittadiniRegistrati(userId),
-	dataVaccino date NOT NULL,
-	nomeCentro varchar(50) REFERENCES CentriVaccinali(nomeCentro),
-	PRIMARY KEY(userId, dataVaccino, nomeCentro)
-);
-
-CREATE TABLE EventiAvversi(
-	idEventoAvverso serial PRIMARY KEY,
-	tipoEvento varchar(50) NOT NULL,
-	valoreGravita int NOT NULL,
-	Commento varchar(255),
-	nomeCentro varchar(50) REFERENCES CentriVaccinali(nomeCentro)
-);
-
 ALTER TABLE CittadiniRegistrati ADD CONSTRAINT mail_unique
 UNIQUE(Mail);
 
 ALTER TABLE CittadiniRegistrati ADD CONSTRAINT user_unique
 UNIQUE(Username);
 
-ALTER TABLE CittadiniRegistrati ADD CONSTRAINT codiceFiscale_unique
+ALTER TABLE CittadiniRegistrati ADD CONSTRAINT cf_unique
 UNIQUE(codFiscale);
+
+CREATE TABLE Si_vaccina (
+	userId int REFERENCES CittadiniRegistrati(userId),
+	idVaccinazione int NOT NULL,
+	nomeCentro varchar(50) REFERENCES CentriVaccinali(nomeCentro),
+	PRIMARY KEY(userId, nomeCentro, idVaccinazione)
+);
+
+CREATE TABLE EventiAvversi (
+	idEventoAvverso serial PRIMARY KEY,
+	tipoEvento varchar(50) NOT NULL,
+	valoreGravita int NOT NULL,
+	Commento varchar(255),
+	nomeCentro varchar(50) REFERENCES CentriVaccinali(nomeCentro)
+)	
