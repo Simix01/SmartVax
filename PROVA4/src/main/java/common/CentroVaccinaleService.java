@@ -13,7 +13,7 @@ public interface CentroVaccinaleService {
 	
 	public void registraCentroVaccinale()throws IOException,CentroVaccinaleGiaRegistrato;
 	
-	public void registraVaccinato() throws IOException;
+	public void registraVaccinato() throws IOException,SQLException;
 	
 	public void registraCittadino() throws IOException,CittadinoGiaRegistrato;
 
