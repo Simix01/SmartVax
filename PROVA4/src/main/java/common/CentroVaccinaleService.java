@@ -9,12 +9,12 @@ import cittadini.Cittadino;
 
 public interface CentroVaccinaleService {
 	
-	public CentroVaccinale VisualizzaCentro() throws IOException,SQLException,CentroVaccinaleNonEsistente;
+	public void VisualizzaCentro(boolean access,String codFiscale) throws IOException,SQLException,CentroVaccinaleNonEsistente,CentriVaccinaliNonEsistenti;
 	
 	public void registraCentroVaccinale()throws IOException,CentroVaccinaleGiaRegistrato;
 	
 	public void registraVaccinato() throws IOException,SQLException;
 	
-	public void registraCittadino() throws IOException,CittadinoGiaRegistrato;
+	public void registraCittadino() throws IOException,CittadinoGiaRegistrato,SQLException,CittadinoNonVaccinato;
 
 }

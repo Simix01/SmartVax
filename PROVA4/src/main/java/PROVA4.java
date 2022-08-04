@@ -7,14 +7,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 
+import common.CentriVaccinaliNonEsistenti;
 import common.CentroVaccinaleGiaRegistrato;
+import common.CentroVaccinaleNonEsistente;
 import common.CentroVaccinaleServiceImpl;
+import common.CittadinoGiaRegistrato;
+import common.CittadinoNonVaccinato;
 
 import java.sql.Connection;
 
 public class PROVA4 {
 
-	public static void main(String[] args) throws IOException, CentroVaccinaleGiaRegistrato, SQLException {
+	public static void main(String[] args) throws IOException, CentroVaccinaleGiaRegistrato, SQLException, CittadinoGiaRegistrato, CittadinoNonVaccinato, CentroVaccinaleNonEsistente, CentriVaccinaliNonEsistenti {
 		// TODO Auto-generated method stub
 
 		System.out.println("---- Main Class1 -----");
@@ -30,7 +34,11 @@ public class PROVA4 {
 		CentroVaccinaleServiceImpl prova = new CentroVaccinaleServiceImpl(conn);
 		//prova.registraCentroVaccinale();
 
-		prova.registraVaccinato();
+		//prova.registraVaccinato();
+		
+		//prova.registraCittadino();
+		
+		prova.VisualizzaCentro(false,"1234567890123456");
 
 	}
 
