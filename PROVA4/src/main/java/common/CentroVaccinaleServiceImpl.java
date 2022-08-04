@@ -22,14 +22,13 @@ import java.text.SimpleDateFormat;
 
 import centrivaccinaliServer.CentroVaccinale;
 import centrivaccinaliServer.Vaccinato;
-import cittadini.Cittadino;
 
 public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	private Connection conn;
 
 	@Override
-	public void VisualizzaCentro(boolean access, String codFiscale)
+	public synchronized void VisualizzaCentro(boolean access, String codFiscale)
 			throws IOException, SQLException, CentroVaccinaleNonEsistente, CentriVaccinaliNonEsistenti {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		String[] trovato = null;
@@ -79,6 +78,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		} catch (NullPointerException e) {
 			System.err.println("Si è verificato un errore.");
 		}
+		conn.close();
 
 	}
 
@@ -243,7 +243,6 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 			}
 		} while (scelta2.equals("s"));
 		conn.close();
-
 	}
 
 	@Override
@@ -545,7 +544,6 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 						"HAI INSERITO UN CARATTERE E NON UN NUMERO/HAI SCHIACCIATO INVIO SENZA SCEGLIERE UN NUMERO!!!");
 			}
 		}
-		conn.close();
 	}
 
 	private void StatisticheEventiAvversi(String nomeCentro) throws SQLException {
@@ -564,6 +562,5 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 			}
 		}
 		rs.close();
-		conn.close();
 	}
 }

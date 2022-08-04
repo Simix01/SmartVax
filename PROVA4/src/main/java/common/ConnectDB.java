@@ -14,8 +14,6 @@ public class ConnectDB {
 	public Connection connect() {
 		Connection conn = null;
 
-		System.out.print("Ciaoo");
-
 		try {
 
 			conn = DriverManager.getConnection(database_connection_string, database_user_name, database_user_password);

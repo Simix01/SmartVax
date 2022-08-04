@@ -13,6 +13,7 @@ import common.CentroVaccinaleNonEsistente;
 import common.CentroVaccinaleServiceImpl;
 import common.CittadinoGiaRegistrato;
 import common.CittadinoNonVaccinato;
+import common.ConnectDB;
 
 import java.sql.Connection;
 
