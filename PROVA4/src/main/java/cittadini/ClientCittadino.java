@@ -8,7 +8,5 @@ public class ClientCittadino {
 	public static void main(String[] args) throws IOException, SQLException {
 		CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino();
 		c.menuCittadino();
-
 	}
-
 }

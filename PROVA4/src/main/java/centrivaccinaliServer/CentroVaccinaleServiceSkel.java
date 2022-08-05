@@ -40,18 +40,14 @@ public class CentroVaccinaleServiceSkel extends Thread {
 				case 2:
 					MenuCittadino();
 					break;
-				default:
-					System.err.println("Error");
-					break;
+				default: out.writeObject(new IOException());
 				}
 
-			} catch (ClassNotFoundException e) {
-				System.err.println("Class not found");
+			} catch (ClassNotFoundException | IOException e) {
+				System.err.println("ERROR");
 				e.printStackTrace();
-			} catch (IOException e) {
-				System.err.println("Error");
-				e.printStackTrace();
-			}
+				return;
+			} 
 		}
 	}
 
@@ -178,7 +174,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 		if (com.equals("VISCENTRO"))
 			return 1;
 		if (com.equals("EVENTOAVV"))
-			return 1;
+			return 2;
 		return -1;
 	}
 
@@ -186,9 +182,9 @@ public class CentroVaccinaleServiceSkel extends Thread {
 		if (com.equals("VISCENTRO"))
 			return 1;
 		if (com.equals("REGCITT"))
-			return 1;
-		if (com.equals("LOGIN"))
 			return 2;
+		if (com.equals("LOGIN"))
+			return 3;
 		return -1;
 	}
 

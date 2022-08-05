@@ -33,12 +33,13 @@ public class CentroVaccinaleServiceStubOperatore implements CentroVaccinaleServi
 
 	public void menuOperatori() throws NumberFormatException, IOException {
 
-		out.writeObject("OPERATORE");
 		String scelta2;
-		System.out.println("1 - REGISTRAZIONE CENTRO VACCINALE");
-		System.out.println("2 - REGISTRAZIONE VACCINATO");
-		System.out.print("-> ");
+		
 		while (true) {
+			out.writeObject("OPERATORE");
+			System.out.println("1 - REGISTRAZIONE CENTRO VACCINALE");
+			System.out.println("2 - REGISTRAZIONE VACCINATO");
+			System.out.print("-> ");
 			int scelta = Integer.parseInt(ins.readLine());
 
 			switch (scelta) {
@@ -64,7 +65,7 @@ public class CentroVaccinaleServiceStubOperatore implements CentroVaccinaleServi
 			}
 			System.out.println("Vuoi uscire? s/n");
 			scelta2 = ins.readLine();
-			if (scelta2.equals("n"))
+			if (scelta2.equals("s"))
 				break;
 		}
 	}

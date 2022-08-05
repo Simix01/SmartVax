@@ -284,8 +284,8 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 				conn.close();
 				System.out.println("Registrazione avvenuta con successo!");
-			}
-			throw new CittadinoNonVaccinato();
+			} else
+				throw new CittadinoNonVaccinato();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
