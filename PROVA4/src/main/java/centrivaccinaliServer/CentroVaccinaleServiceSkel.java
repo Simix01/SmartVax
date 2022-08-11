@@ -40,14 +40,15 @@ public class CentroVaccinaleServiceSkel extends Thread {
 				case 2:
 					MenuCittadino();
 					break;
-				default: out.writeObject(new IOException());
+				default:
+					out.writeObject(new IOException());
 				}
 
 			} catch (ClassNotFoundException | IOException e) {
 				System.err.println("ERROR");
 				e.printStackTrace();
 				return;
-			} 
+			}
 		}
 	}
 
@@ -59,7 +60,9 @@ public class CentroVaccinaleServiceSkel extends Thread {
 			switch (scelta) {
 			case 1:
 				try {
-					g.registraCentroVaccinale();
+					g.registraCentroVaccinale((String) in.readObject(), (String) in.readObject(),
+							(String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
+							(String) in.readObject(), (String) in.readObject(), (String) in.readObject());
 					out.writeObject("OK");
 				} catch (CentroVaccinaleGiaRegistrato e) {
 					out.writeObject(e);
@@ -67,7 +70,8 @@ public class CentroVaccinaleServiceSkel extends Thread {
 				break;
 			case 2:
 				try {
-					g.registraVaccinato();
+					g.registraVaccinato((String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
+							(String) in.readObject(), (String) in.readObject());
 					out.writeObject("OK");
 				} catch (SQLException e) {
 					out.writeObject(e);
@@ -94,22 +98,27 @@ public class CentroVaccinaleServiceSkel extends Thread {
 
 	private void MenuCittadino() {
 		try {
-			int scelta = interpretaCittadino((String) (in).readObject());
+			int scelta = interpretaCittadino((String) in.readObject());
 
 			switch (scelta) {
 			case 1:
 				try {
-					g.VisualizzaCentro(false, null);
-					out.writeObject("OK");
+
+					out.writeObject(
+							g.VisualizzaCentro(false, null, (Integer) in.readObject(), (Integer) in.readObject(),
+									(String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
+									(Integer) in.readObject(), (String) in.readObject(), (String) in.readObject()));
 				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e) {
 					out.writeObject(e);
 				}
 				break;
 			case 2:
 				try {
-					g.registraCittadino();
+					g.registraCittadino((String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
+							(String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
+							(Integer) in.readObject());
 					out.writeObject("OK");
-				} catch (IOException| CittadinoGiaRegistrato | SQLException | CittadinoNonVaccinato e) {
+				} catch (IOException | CittadinoGiaRegistrato | SQLException | CittadinoNonVaccinato e) {
 					out.writeObject(e);
 				}
 				break;
@@ -132,23 +141,29 @@ public class CentroVaccinaleServiceSkel extends Thread {
 			e1.printStackTrace();
 		}
 	}
-	
+
 	private void AreaCittadino() {
 		try {
 			int scelta = interpretaCittadinoRegistrato((String) in.readObject());
 			switch (scelta) {
 			case 1:
 				try {
-					g.VisualizzaCentro(false, null);
-					out.writeObject("OK");
+
+					out.writeObject(
+							g.VisualizzaCentro(false, null, (Integer) in.readObject(), (Integer) in.readObject(),
+									(String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
+									(Integer) in.readObject(), (String) in.readObject(), (String) in.readObject()));
 				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e) {
 					out.writeObject(e);
 				}
 				break;
 			case 2:
 				try {
-					g.VisualizzaCentro(true, (String)in.readObject());
-					out.writeObject("OK");
+
+					out.writeObject(g.VisualizzaCentro(true, (String) in.readObject(), (Integer) in.readObject(),
+							(Integer) in.readObject(), (String) in.readObject(), (String) in.readObject(),
+							(String) in.readObject(), (Integer) in.readObject(), (String) in.readObject(),
+							(String) in.readObject()));
 				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e) {
 					out.writeObject(e);
 				}
@@ -158,7 +173,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 				MenuCittadino();
 				break;
 			}
-			
+
 		} catch (ClassNotFoundException e) {
 			System.err.println("Si è verificato un errore.");
 			e.printStackTrace();
@@ -167,9 +182,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
+
 	private int interpretaCittadinoRegistrato(String com) {
 		if (com.equals("VISCENTRO"))
 			return 1;

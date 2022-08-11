@@ -1,3 +1,4 @@
+package graphics;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -75,7 +76,7 @@ public class Homepage_Frame implements ActionListener{
 		//label per inserire immagine logo
 		logoLabel = new JLabel("");
 		logoLabel.setSize(400,400);
-		ImageIcon logoIcon = new ImageIcon("icons\\SmartVaxLogo.png");
+		ImageIcon logoIcon = new ImageIcon(getClass().getClassLoader().getResource("SmartVaxLogo.png")); //new ImageIcon("icons\\SmartVaxLogo.png");
 		Image logoImg = logoIcon.getImage();
 		Image logoScaling = logoImg.getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), Image.SCALE_SMOOTH);
 		ImageIcon logoScaled = new ImageIcon(logoScaling);

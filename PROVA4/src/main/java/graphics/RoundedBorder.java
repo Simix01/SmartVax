@@ -1,3 +1,4 @@
+package graphics;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Insets;

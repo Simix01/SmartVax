@@ -10,9 +10,10 @@ public interface CentroVaccinaleServiceOperatore {
 	
 	
 	
-	public void registraCentroVaccinale()throws IOException,CentroVaccinaleGiaRegistrato;
+	public void registraCentroVaccinale(String nome,String tipoVia,String nomeVia,String numCiv,String comune,
+			String sigProv,String cap,String tipologia)throws IOException,CentroVaccinaleGiaRegistrato;
 	
-	public void registraVaccinato() throws IOException,SQLException;
+	public void registraVaccinato(String nome,String cognome,String nomeCentro,String codFiscale,String vaccino) throws IOException,SQLException;
 	
 	
 

@@ -1,3 +1,4 @@
+package graphics;
 import java.awt.Color;
 import java.awt.EventQueue;
 
@@ -75,7 +76,7 @@ public class HomeCittadino_Frame implements ActionListener, MouseListener{
 		//aggiungo label per inserire immagine user
 		userLabel = new JLabel("");
 		userLabel.setSize(40, 40);
-		ImageIcon userIcon = new ImageIcon("icons\\user.png");
+		ImageIcon userIcon = new ImageIcon(getClass().getClassLoader().getResource("user.png")); //new ImageIcon("icons\\user.png");
 		Image userImg = userIcon.getImage();
 		Image userScaling = userImg.getScaledInstance(userLabel.getWidth(), userLabel.getHeight(), Image.SCALE_SMOOTH);
 		ImageIcon userScaled = new ImageIcon(userScaling);
@@ -84,7 +85,7 @@ public class HomeCittadino_Frame implements ActionListener, MouseListener{
 		//aggiungo label per inserire immagine password
 		pwLabel = new JLabel("");
 		pwLabel.setSize(40, 40);
-		ImageIcon pwIcon = new ImageIcon("icons\\pw.png");
+		ImageIcon pwIcon = new ImageIcon(getClass().getClassLoader().getResource("pw.png")); //new ImageIcon("icons\\pw.png");
 		Image pwImg = pwIcon.getImage();
 		Image pwScaling = pwImg.getScaledInstance(pwLabel.getWidth(), pwLabel.getHeight(), Image.SCALE_SMOOTH);
 		ImageIcon pwScaled = new ImageIcon(pwScaling);
@@ -114,7 +115,7 @@ public class HomeCittadino_Frame implements ActionListener, MouseListener{
 		loginButton.setBackground(new Color(173, 216, 230));
 		loginButton.setFont(new Font("Gadugi", Font.BOLD, 12));
 		loginButton.setBorder(new RoundedBorder(10));
-		ImageIcon loginIcon = new ImageIcon("icons\\login.png");
+		ImageIcon loginIcon = new ImageIcon(getClass().getClassLoader().getResource("login.png")); //new ImageIcon("icons\\login.png");
 		Image loginImg = loginIcon.getImage();
 		Image loginScaling = loginImg.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
 		ImageIcon loginScaled = new ImageIcon(loginScaling);

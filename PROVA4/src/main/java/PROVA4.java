@@ -39,7 +39,7 @@ public class PROVA4 {
 		
 		//prova.registraCittadino();
 		
-		prova.VisualizzaCentro(false,"1234567890123456");
+		//prova.VisualizzaCentro(false,"1234567890123456");
 
 	}
 
