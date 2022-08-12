@@ -1,4 +1,5 @@
 package common;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -18,20 +19,17 @@ public class ConnectDB {
 
 			conn = DriverManager.getConnection(database_connection_string, database_user_name, database_user_password);
 
-			System.out.println("You are successfully connected to the PostgreSQL database server.");
-
 		} catch (SQLException e)
 
 		{
 
-			System.out.println(e.getMessage());
-
+			System.exit(0);
 		}
 
 		return conn;
 
 	}
-	
+
 	public ConnectDB(String user, String pass) {
 		database_user_name = user;
 		database_user_password = pass;

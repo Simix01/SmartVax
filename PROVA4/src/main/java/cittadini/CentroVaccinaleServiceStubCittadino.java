@@ -115,6 +115,8 @@ public class CentroVaccinaleServiceStubCittadino implements CentroVaccinaleServi
 
 		Object tmp;
 
+		out.writeObject("CITTADINO");
+		
 		if (!access)
 			out.writeObject("VISCENTRO");
 		else {
@@ -158,6 +160,7 @@ public class CentroVaccinaleServiceStubCittadino implements CentroVaccinaleServi
 			String cf, int id) throws IOException, CittadinoGiaRegistrato, SQLException, CittadinoNonVaccinato {
 		Object tmp;
 
+		out.writeObject("CITTADINO");
 		out.writeObject("REGCITT");
 
 		out.writeObject(nome);

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.Date;
 import java.sql.SQLException;
 
 import common.CentriVaccinaliNonEsistenti;
@@ -44,7 +45,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 					out.writeObject(new IOException());
 				}
 
-			} catch (ClassNotFoundException | IOException e) {
+			} catch (ClassNotFoundException | IOException | CentroVaccinaleNonEsistente e) {
 				System.err.println("ERROR");
 				e.printStackTrace();
 				return;
@@ -52,7 +53,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 		}
 	}
 
-	private void MenuOperatore() {
+	private void MenuOperatore() throws CentroVaccinaleNonEsistente {
 		try {
 
 			int scelta = interpretaOperatore((String) in.readObject());
@@ -62,7 +63,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 				try {
 					g.registraCentroVaccinale((String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
-							(String) in.readObject(), (String) in.readObject(), (String) in.readObject());
+							(String) in.readObject(), (int) in.readObject(), (String) in.readObject());
 					out.writeObject("OK");
 				} catch (CentroVaccinaleGiaRegistrato e) {
 					out.writeObject(e);
@@ -71,8 +72,11 @@ public class CentroVaccinaleServiceSkel extends Thread {
 			case 2:
 				try {
 					g.registraVaccinato((String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
-							(String) in.readObject(), (String) in.readObject());
+							(String) in.readObject(), (String) in.readObject(), (Date) in.readObject());
 					out.writeObject("OK");
+				} catch (CentroVaccinaleNonEsistente e) {
+					out.writeObject(e);
+					e.printStackTrace();
 				} catch (SQLException e) {
 					out.writeObject(e);
 					e.printStackTrace();

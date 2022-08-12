@@ -6,7 +6,7 @@ public class ClientOperatore {
 		try {
 			
 			CentroVaccinaleServiceStubOperatore c = new CentroVaccinaleServiceStubOperatore();
-			c.menuOperatori();
+			//c.registraCentroVaccinale(null, null, null, null, null, null, null, null);;
 			
 		}catch(Exception e) {
 			

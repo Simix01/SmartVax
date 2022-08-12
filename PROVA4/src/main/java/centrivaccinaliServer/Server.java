@@ -1,8 +1,10 @@
 package centrivaccinaliServer;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import common.CentroVaccinaleService;
 import common.CentroVaccinaleServiceImpl;
@@ -12,13 +14,16 @@ public class Server {
 
 	public static final int PORT = 11100;
 
+	Connection conn;
 
-	public static void main(String[] args) throws Exception {
+	public Server(String user, String password) throws IOException, SQLException {
+		ConnectDB c = new ConnectDB(user, password);
 
-		ConnectDB c = new ConnectDB("postgres", "Nhuari062799!");
+		conn = c.connect();
 
-		Connection conn = c.connect();
+	}
 
+	public void Start() throws IOException {
 		try (ServerSocket ser = new ServerSocket(PORT)) {
 			CentroVaccinaleService g = new CentroVaccinaleServiceImpl(conn);
 
@@ -28,6 +33,5 @@ public class Server {
 				cs.start();
 			}
 		}
-
 	}
 }

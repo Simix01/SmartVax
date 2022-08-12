@@ -1,26 +1,17 @@
 package common;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.channels.NonReadableChannelException;
-import java.security.interfaces.RSAKey;
 import java.sql.Connection;
-import java.util.Date;
+import java.sql.Date;
 import java.util.LinkedList;
-
-import org.postgresql.util.PSQLException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
-import centrivaccinaliServer.CentroVaccinale;
 import centrivaccinaliServer.Vaccinato;
 
 public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
@@ -67,7 +58,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 			// avversi (solo
 			// tramite login effettuato)
 			else
-				info += StatisticheEventiAvversi(trovato[0]); // stampa delle statistiche relative agli eventi avversi
+				info += StatisticheEventiAvversi(); // stampa delle statistiche relative agli eventi avversi
 
 		} catch (NumberFormatException e) {
 			System.err.println(
@@ -81,15 +72,9 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	@Override
 	public synchronized void registraCentroVaccinale(String nome, String tipoVia, String nomeVia, String numCiv,
-			String comune, String sigProv, String cap, String tipologia)
-			throws IOException, CentroVaccinaleGiaRegistrato {
-
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+			String comune, String sigProv, int cap, String tipologia) throws IOException, CentroVaccinaleGiaRegistrato {
 
 		try {
-
-			CentroVaccinale centroVaccinale = new CentroVaccinale(nome, tipoVia, nomeVia, numCiv, comune, sigProv, cap,
-					tipologia);
 
 			if (!findCentroVac(nome)) {
 				String queryInsert = "insert into centrivaccinali (nomecentro,tipoluogo,nomeluogo,numcivico,comune,siglaprovincia,cap,tipologia) "
@@ -99,9 +84,6 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 				PreparedStatement preparedStmt = conn.prepareStatement(queryInsert);
 				preparedStmt.executeUpdate();
 				conn.close();
-
-				System.out.println(" ");
-				System.out.println("Operazione eseguita con successo");
 
 				conn.close();
 
@@ -116,76 +98,53 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	@Override
 	public synchronized void registraVaccinato(String nome, String cognome, String nomeCentro, String codFiscale,
-			String vaccino) throws IOException, SQLException {
+			String vaccino, Date date) throws IOException, SQLException, CentroVaccinaleNonEsistente {
 
 		Statement preparedStmt = conn.createStatement();
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		String scelta2 = null;
-		String codiceFiscale;
-		do {
-			try {
-				while (true) {
-					try {
-						if (findCentroVac(nomeCentro))
-							break;
-						else
-							System.err.println("CENTRO VACCINALE NON TROVATO");
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+		new BufferedReader(new InputStreamReader(System.in));
 
-				Vaccinato vaccinato = new Vaccinato(nomeCentro, nome, cognome, codFiscale, vaccino);
+		if (!findCentroVac(nomeCentro))
+			throw new CentroVaccinaleNonEsistente();
 
-				String queryString = "select exists" + "(select * from information_schema.tables\r\n"
-						+ "where table_schema = 'public' AND table_name = 'vaccinati_" + nomeCentro.toLowerCase()
-						+ "') as value";
+		Vaccinato vaccinato = new Vaccinato(nomeCentro, nome, cognome, codFiscale, vaccino);
 
-				Statement stmt = conn.createStatement();
+		String queryString = "select exists" + "(select * from information_schema.tables\r\n"
+				+ "where table_schema = 'public' AND table_name = 'vaccinati_" + nomeCentro.toLowerCase()
+				+ "') as value";
 
-				ResultSet rs = stmt.executeQuery(queryString);
+		Statement stmt = conn.createStatement();
 
-				rs.next();
-				boolean exist = rs.getBoolean("value");
-				rs.close();
-				if (!exist) {
+		ResultSet rs = stmt.executeQuery(queryString);
 
-					String queryCrea = "CREATE TABLE Vaccinati_" + nomeCentro + " (" + "idVaccinazione int PRIMARY KEY,"
-							+ "nomeVaccino varchar(20) NOT NULL," + "dataVaccino date NOT NULL,"
-							+ "Nome VARCHAR(25) NOT NULL," + "Cognome VARCHAR(40) NOT NULL,"
-							+ "codFiscale VARCHAR(16) NOT NULL,"
-							+ "nomeCentro varchar(50) REFERENCES CentriVaccinali(nomeCentro))";
+		rs.next();
+		boolean exist = rs.getBoolean("value");
+		rs.close();
+		if (!exist) {
 
-					preparedStmt.addBatch(queryCrea);
-				}
+			String queryCrea = "CREATE TABLE Vaccinati_" + nomeCentro + " (" + "idVaccinazione int PRIMARY KEY,"
+					+ "nomeVaccino varchar(20) NOT NULL," + "dataVaccino date NOT NULL," + "Nome VARCHAR(25) NOT NULL,"
+					+ "Cognome VARCHAR(40) NOT NULL," + "codFiscale VARCHAR(16) NOT NULL,"
+					+ "nomeCentro varchar(50) REFERENCES CentriVaccinali(nomeCentro))";
 
-				Date date = new SimpleDateFormat("dd/MM/yyyy").parse(vaccinato.getData());
+			preparedStmt.addBatch(queryCrea);
+		}
 
-				String queryAggiungiVaccinato = "INSERT INTO vaccinati_" + nomeCentro.toLowerCase()
-						+ "(idvaccinazione,nomevaccino,datavaccino,nome,cognome,codfiscale,nomecentro)" + " VALUES("
-						+ vaccinato.getId() + ",'" + vaccino + "','" + date + "','" + nome + "','" + cognome + "','"
-						+ codFiscale + "','" + nomeCentro + "')";
+		// Date date = new SimpleDateFormat("dd/MM/yyyy").parse(vaccinato.getData());
 
-				preparedStmt.addBatch(queryAggiungiVaccinato);
+		String queryAggiungiVaccinato = "INSERT INTO vaccinati_" + nomeCentro.toLowerCase()
+				+ "(idvaccinazione,nomevaccino,datavaccino,nome,cognome,codfiscale,nomecentro)" + " VALUES("
+				+ vaccinato.getId() + ",'" + vaccino + "','" + date + "','" + nome + "','" + cognome + "','"
+				+ codFiscale + "','" + nomeCentro + "')";
 
-				String querySiVaccinaString = "INSERT INTO vaccinazioni VALUES ('" + codFiscale + "',"
-						+ vaccinato.getId() + ")";
+		preparedStmt.addBatch(queryAggiungiVaccinato);
 
-				preparedStmt.addBatch(querySiVaccinaString);
+		String querySiVaccinaString = "INSERT INTO vaccinazioni VALUES ('" + codFiscale + "'," + vaccinato.getId()
+				+ ")";
 
-				preparedStmt.executeBatch();
+		preparedStmt.addBatch(querySiVaccinaString);
 
-				System.out.println("Vuoi ancora registrare un vaccinato? s/n");
-				scelta2 = in.readLine();
+		preparedStmt.executeBatch();
 
-			} catch (IOException e) {
-				System.err.println("Si è verificato un errore.");
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} while (scelta2.equals("s"));
 		conn.close();
 	}
 
@@ -275,7 +234,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	}
 
 	private String[] RicercaCentroNome(String cercato) throws SQLException, CentroVaccinaleNonEsistente {
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		new BufferedReader(new InputStreamReader(System.in));
 		String[] vettore = new String[8];
 		boolean trovato = false;
 		ResultSet rs = null;
@@ -361,7 +320,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	private void inserisciEventiAvversi(String nomeCentro, String CF, int scelta, int gravita, String nota,
 			String scelta3) throws SQLException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("SCEGLI L'EVENTO AVVERSO: ");
 		String evento = "";
 
@@ -420,7 +379,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		}
 	}
 
-	private String StatisticheEventiAvversi(String nomeCentro) throws SQLException {
+	private String StatisticheEventiAvversi() throws SQLException {
 		Statement stmt = conn.createStatement();
 
 		String queryStatisticaString = "select avg(valoregravita)as mediagravita, tipoevento, count(*) as numcases  from eventiavversi group by tipoevento";
@@ -439,4 +398,5 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		rs.close();
 		return info;
 	}
+
 }
