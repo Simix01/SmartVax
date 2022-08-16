@@ -18,6 +18,8 @@ public class ConnectDB {
 		try {
 
 			conn = DriverManager.getConnection(database_connection_string, database_user_name, database_user_password);
+			
+			System.out.println("Ciao");
 
 		} catch (SQLException e)
 

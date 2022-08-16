@@ -41,14 +41,14 @@ public class CentroVaccinaleServiceSkel extends Thread {
 				case 2:
 					MenuCittadino();
 					break;
-				default:
-					out.writeObject(new IOException());
 				}
-
 			} catch (ClassNotFoundException | IOException | CentroVaccinaleNonEsistente e) {
-				System.err.println("ERROR");
+				System.err.println(e.getMessage());
 				e.printStackTrace();
 				return;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
@@ -100,7 +100,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 		}
 	}
 
-	private void MenuCittadino() {
+	private void MenuCittadino() throws SQLException {
 		try {
 			int scelta = interpretaCittadino((String) in.readObject());
 
@@ -108,10 +108,9 @@ public class CentroVaccinaleServiceSkel extends Thread {
 			case 1:
 				try {
 
-					out.writeObject(
-							g.VisualizzaCentro(false, null, (Integer) in.readObject(), (Integer) in.readObject(),
-									(String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
-									(Integer) in.readObject(), (String) in.readObject(), (String) in.readObject()));
+					out.writeObject(g.VisualizzaCentro(false, (String) in.readObject(), (String) in.readObject(),
+							(String) in.readObject(), (String) in.readObject(), (Integer) in.readObject(),
+							(String) in.readObject()));
 				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e) {
 					out.writeObject(e);
 				}
@@ -127,12 +126,29 @@ public class CentroVaccinaleServiceSkel extends Thread {
 				}
 				break;
 			case 3:
-				AreaCittadino();
+				try {
+					out.writeObject(g.Login((String) in.readObject(), (String) in.readObject()));
+				} catch (IOException | SQLException e) {
+					out.writeObject(e);
+				}
 				break;
-			default:
-				System.out.println("SCELTA NON VALIDA!!!");
-				MenuCittadino();
+			case 4:
+				try {
+					out.writeObject(g.RicercaCentroComuneTipologia((String) in.readObject(), (String) in.readObject()));
+				} catch (SQLException e) {
+					out.writeObject(e);
+				}
+			case 5:
+				try {
+
+					out.writeObject(g.VisualizzaCentro(true, (String) in.readObject(), (String) in.readObject(),
+							(String) in.readObject(), (String) in.readObject(), (Integer) in.readObject(),
+							(String) in.readObject()));
+				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e) {
+					out.writeObject(e);
+				}
 				break;
+				
 			}
 
 		} catch (IOException e) {
@@ -146,54 +162,6 @@ public class CentroVaccinaleServiceSkel extends Thread {
 		}
 	}
 
-	private void AreaCittadino() {
-		try {
-			int scelta = interpretaCittadinoRegistrato((String) in.readObject());
-			switch (scelta) {
-			case 1:
-				try {
-
-					out.writeObject(
-							g.VisualizzaCentro(false, null, (Integer) in.readObject(), (Integer) in.readObject(),
-									(String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
-									(Integer) in.readObject(), (String) in.readObject(), (String) in.readObject()));
-				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e) {
-					out.writeObject(e);
-				}
-				break;
-			case 2:
-				try {
-
-					out.writeObject(g.VisualizzaCentro(true, (String) in.readObject(), (Integer) in.readObject(),
-							(Integer) in.readObject(), (String) in.readObject(), (String) in.readObject(),
-							(String) in.readObject(), (Integer) in.readObject(), (String) in.readObject(),
-							(String) in.readObject()));
-				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e) {
-					out.writeObject(e);
-				}
-				break;
-			default:
-				System.out.println("SCELTA NON VALIDA!!!");
-				MenuCittadino();
-				break;
-			}
-
-		} catch (ClassNotFoundException e) {
-			System.err.println("Si è verificato un errore.");
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.err.println("Si è verificato un errore.");
-			e.printStackTrace();
-		}
-	}
-
-	private int interpretaCittadinoRegistrato(String com) {
-		if (com.equals("VISCENTRO"))
-			return 1;
-		if (com.equals("EVENTOAVV"))
-			return 2;
-		return -1;
-	}
 
 	private int interpretaCittadino(String com) {
 		if (com.equals("VISCENTRO"))
@@ -202,6 +170,10 @@ public class CentroVaccinaleServiceSkel extends Thread {
 			return 2;
 		if (com.equals("LOGIN"))
 			return 3;
+		if (com.equals("RICERCACOMUNETIPOLOGIA"))
+			return 4;
+		if (com.equals("EVENTOAVV"))
+			return 5;
 		return -1;
 	}
 

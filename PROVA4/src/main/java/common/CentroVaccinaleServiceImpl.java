@@ -17,44 +17,84 @@ import centrivaccinaliServer.Vaccinato;
 public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	private Connection conn;
+	private static String CF;
 
 	@Override
-	public synchronized String VisualizzaCentro(boolean access, String codFiscale, int scelta, int scelta2,
-			String cercato, String comune, String cercatoTipo, int gravita, String nota, String scelta3)
+	public synchronized boolean Login(String id, String pw) throws SQLException {
+		String queryVerificaLogin = "SELECT codfiscale" + " FROM cittadiniregistrati" + " WHERE username='" + id
+				+ "' AND password= '" + pw + "'";
+
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+
+		ResultSet rs = stmt.executeQuery(queryVerificaLogin);
+
+		if (rs.isBeforeFirst()) {
+			rs.next();
+			CF = rs.getString("codFiscale");
+			return true;
+		} else
+			return false;
+	}
+
+	@Override
+	public synchronized LinkedList<String[]> RicercaCentroComuneTipologia(String comune, String cercatoTipo)
+			throws SQLException {
+		Statement stmt = conn.createStatement();
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		String[] vettore;
+		LinkedList<String[]> infoCentri = new LinkedList<String[]>();
+		ResultSet rs = null;
+		String query = "SELECT * FROM centrivaccinali where comune = '" + comune + "' AND tipologia = '"
+				+ cercatoTipo.toLowerCase() + "'";
+
+		rs = stmt.executeQuery(query);
+
+		if (rs.isBeforeFirst()) {
+			while (rs.next()) {
+				vettore = new String[8];
+				vettore[0] = rs.getString("nomecentro");
+				vettore[1] = rs.getString("tipoluogo");
+				vettore[2] = rs.getString("nomeluogo");
+				vettore[3] = rs.getString("numcivico");
+				vettore[4] = rs.getString("comune");
+				vettore[5] = rs.getString("siglaprovincia");
+				vettore[6] = String.valueOf(rs.getInt("cap"));
+				vettore[7] = rs.getString("tipologia");
+
+				infoCentri.add(vettore);
+			}
+		} else
+			return null;
+		rs.close();
+		if (!infoCentri.isEmpty())
+			return infoCentri;
+		else
+			return null;
+	}
+
+	@Override
+	public synchronized String VisualizzaCentro(boolean access, String sceltaEvento, String cercato, String comune,
+			String cercatoTipo, int gravita, String nota)
 			throws IOException, SQLException, CentroVaccinaleNonEsistente, CentriVaccinaliNonEsistenti {
 		String[] trovato = null;
 		String info = "";
+
 		try {
 
-			switch (scelta) {
-			case 1:
-				do {
-					trovato = RicercaCentroNome(cercato);
-					if (trovato == null)
-						throw new CentroVaccinaleNonEsistente();
-				} while (trovato == null);
-				break;
-			case 2:
-				do {
-					trovato = RicercaCentroComuneTipologia(comune, cercatoTipo);
-					if (trovato == null)
-						throw new CentriVaccinaliNonEsistenti();
-				} while (trovato == null);
-				break;
-			default:
-				System.out.println("SCELTA NON VALIDA!!!");
-				break;
-
-			}
+			do {
+				trovato = RicercaCentroNome(cercato);
+				if (trovato == null)
+					throw new CentroVaccinaleNonEsistente();
+			} while (trovato == null);
 
 			info += "\nNome centro -> " + trovato[0] + "\n" + "Indirizzo -> " + trovato[1] + " " + trovato[2] + " "
 					+ trovato[3] + " " + trovato[4] + " " + trovato[5] + " " + trovato[6] + "\n" + "Tipologia -> "
 					+ trovato[7];
 
 			if (access) // controllo che sia avvenuto l'accesso tramite il login
-				inserisciEventiAvversi(trovato[0], codFiscale, scelta2, gravita, nota, scelta3); // funzione per
-																									// l'inserimento
-																									// degli eventi
+				inserisciEventiAvversi(trovato[0], sceltaEvento, gravita, nota); // funzione per
+			// l'inserimento
+			// degli eventi
 			// avversi (solo
 			// tramite login effettuato)
 			else
@@ -66,7 +106,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		} catch (NullPointerException e) {
 			System.err.println("Si è verificato un errore.");
 		}
-		conn.close();
+
 		return info;
 	}
 
@@ -83,9 +123,6 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 				PreparedStatement preparedStmt = conn.prepareStatement(queryInsert);
 				preparedStmt.executeUpdate();
-				conn.close();
-
-				conn.close();
 
 			} else
 				throw new CentroVaccinaleGiaRegistrato();
@@ -145,7 +182,6 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 		preparedStmt.executeBatch();
 
-		conn.close();
 	}
 
 	@Override
@@ -164,7 +200,6 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 				stmt.executeUpdate();
 
-				conn.close();
 				System.out.println("Registrazione avvenuta con successo!");
 			} else
 				throw new CittadinoNonVaccinato();
@@ -267,115 +302,18 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	}
 
-	private String[] RicercaCentroComuneTipologia(String comune, String cercatoTipo) throws SQLException {
-		Statement stmt = conn.createStatement();
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		String[] vettore;
-		LinkedList<String[]> infoCentri = new LinkedList<String[]>();
-		ResultSet rs = null;
-		int scelta = 0;
-		try {
-
-			String query = "SELECT * FROM centrivaccinali where comune = '" + comune + "' AND tipologia = '"
-					+ cercatoTipo + "'";
-
-			rs = stmt.executeQuery(query);
-
-			if (rs.isBeforeFirst()) {
-				while (rs.next()) {
-					vettore = new String[8];
-					vettore[0] = rs.getString("nomecentro");
-					vettore[1] = rs.getString("tipoluogo");
-					vettore[2] = rs.getString("nomeluogo");
-					vettore[3] = rs.getString("numcivico");
-					vettore[4] = rs.getString("comune");
-					vettore[5] = rs.getString("siglaprovincia");
-					vettore[6] = String.valueOf(rs.getInt("cap"));
-					vettore[7] = rs.getString("tipologia");
-
-					infoCentri.add(vettore);
-				}
-				int c = 1;
-				System.out.println("Seleziona centro");
-				for (String[] tmp : infoCentri) {
-					System.out.print(c++ + " -> ");
-					for (int i = 0; i < tmp.length; i++)
-						System.out.print(tmp[i] + " ");
-					System.out.println();
-				}
-				System.out.print("SCELTA: ");
-				scelta = Integer.parseInt(in.readLine());
-			} else
-				return null;
-		} catch (IOException e) {
-			System.err.println("Si è verificato un errore.");
-			e.printStackTrace();
-		}
-		rs.close();
-		if (!infoCentri.isEmpty())
-			return infoCentri.get(scelta - 1);
-		else
-			return null;
-	}
-
-	private void inserisciEventiAvversi(String nomeCentro, String CF, int scelta, int gravita, String nota,
-			String scelta3) throws SQLException {
-		new BufferedReader(new InputStreamReader(System.in));
-		System.out.println("SCEGLI L'EVENTO AVVERSO: ");
-		String evento = "";
+	private void inserisciEventiAvversi(String nomeCentro, String sceltaEvento, int gravita, String nota)
+			throws SQLException {
 
 		if (verificaVaccinato(nomeCentro, CF)) {
-			try {
-				do {
-					switch (scelta) {
-					case 1:
-						evento = "mal di testa";
-						break;
-					case 2:
-						evento = "febbre";
-						break;
-					case 3:
-						evento = "dolore muscolari";
-						break;
-					case 4:
-						evento = "spossatezza";
-						break;
-					case 5:
-						evento = "dolori intestinali";
-						break;
-					case 6:
-						evento = "dolori muscolari";
-						break;
-					case 7:
-						evento = "tosse";
-						break;
-					case 8:
-						evento = "mal di gola";
-						break;
-					case 9:
-						evento = "perdita del gusto e/o olfatto";
-						break;
-					case 10:
-						evento = "diarrea";
-						break;
-					case 11:
-						evento = "difficolt� respiratoria";
-						break;
-					}
 
-					String queryAddEvento = "INSERT INTO eventiavversi(tipoevento,valoregravita,commento,nomecentro) "
-							+ "VALUES ('" + evento + "','" + gravita + "','" + nota + "','" + nomeCentro + "')";
+			String queryAddEvento = "INSERT INTO eventiavversi(tipoevento,valoregravita,commento,nomecentro) "
+					+ "VALUES ('" + sceltaEvento + "','" + gravita + "','" + nota + "','" + nomeCentro + "')";
 
-					PreparedStatement stmt = conn.prepareStatement(queryAddEvento);
+			PreparedStatement stmt = conn.prepareStatement(queryAddEvento);
 
-					stmt.executeUpdate();
+			stmt.executeUpdate();
 
-				} while (scelta3.equals("s"));
-
-			} catch (NumberFormatException e) {
-				System.err.println(
-						"HAI INSERITO UN CARATTERE E NON UN NUMERO/HAI SCHIACCIATO INVIO SENZA SCEGLIERE UN NUMERO!!!");
-			}
 		}
 	}
 

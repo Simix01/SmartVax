@@ -14,7 +14,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.sql.SQLException;
+
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import cittadini.CentroVaccinaleServiceStubCittadino;
+
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
@@ -245,6 +251,7 @@ public class HomeCittadino_Frame implements ActionListener, MouseListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
+		boolean login = false;
 		if (e.getSource() == registerButton) {
 			frmSmartvaxHome.dispose();
 			Register_Frame myFrame = new Register_Frame();
@@ -257,13 +264,23 @@ public class HomeCittadino_Frame implements ActionListener, MouseListener {
 
 		if (e.getSource() == loginButton) {
 			// FARE QUERY PER CONTROLLARE CHE L'UTENTE SI SIA LOGGATO CON I DATI CORRETTI
-			frmSmartvaxHome.dispose();
-			LoggedIn_Frame myFrame = new LoggedIn_Frame();
+			// LoggedIn_Frame myFrame = new LoggedIn_Frame(true);
 
-			// ALTRIEMENTI ESEGUE:
-			resultLabel.setText("I dati di accesso sono errati");
-			resultLabel.setForeground(Color.red);
-			resultLabel.setVisible(true);
+			try {
+				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino();
+				login = c.Login(userField.getText(), String.valueOf(passwordField.getPassword()));
+			} catch (IOException | SQLException e1) {
+				e1.printStackTrace();
+			}
+
+			if (login) {
+				frmSmartvaxHome.dispose();
+				LoggedIn_Frame myFrame = new LoggedIn_Frame();
+			} else {
+				resultLabel.setText("I dati di accesso sono errati");
+				resultLabel.setForeground(Color.red);
+				resultLabel.setVisible(true);
+			}
 		}
 	}
 }
