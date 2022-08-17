@@ -1,6 +1,5 @@
 package graphics;
 
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -20,7 +19,6 @@ public class LoggedIn_Frame implements ActionListener {
 	private JButton buttonSearch;
 	private JButton eventButton;
 	private JButton logoutButton;
-	private boolean login;
 
 	/**
 	 * Launch the application.
@@ -38,7 +36,7 @@ public class LoggedIn_Frame implements ActionListener {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
+
 		frmLaTuaHome = new JFrame();
 		frmLaTuaHome.setTitle("SmartVax - La tua home");
 		frmLaTuaHome.setResizable(false);
@@ -48,18 +46,13 @@ public class LoggedIn_Frame implements ActionListener {
 		frmLaTuaHome.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmLaTuaHome.setVisible(true);
 
-		JLabel lblNewLabel = new JLabel("Benvenuto,");
+		JLabel lblNewLabel = new JLabel("Benvenuto/a ");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 
 		nameLabel = new JLabel("");
 		nameLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
-		// SOSTITUIRE NOME E COGNOME CON LA QUERY PER TROVARE NOME E COGNOME DI CHI SI
-		// LOGGA
-		String nome = "Simone";
-		String cognome = "Bernaschina";
-		nameLabel.setText(nome + " " + cognome);
 
-		JLabel lblNewLabel_1 = new JLabel(", nella tua area personale, seleziona operazione da effettuare");
+		JLabel lblNewLabel_1 = new JLabel("nella tua area personale, seleziona operazione da effettuare");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 11));
 
 		// button per andare a cercare informazioni relative al centro vaccinale
@@ -85,23 +78,27 @@ public class LoggedIn_Frame implements ActionListener {
 
 		GroupLayout groupLayout = new GroupLayout(frmLaTuaHome.getContentPane());
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap(87, Short.MAX_VALUE)
-						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED).addComponent(nameLabel)
-						.addPreferredGap(ComponentPlacement.RELATED).addComponent(lblNewLabel_1).addGap(61))
+				.addGroup(groupLayout.createSequentialGroup().addContainerGap(137, Short.MAX_VALUE)
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(Alignment.TRAILING,
+										groupLayout.createSequentialGroup().addComponent(nameLabel).addGap(33))
+								.addGroup(Alignment.TRAILING,
+										groupLayout.createSequentialGroup().addComponent(lblNewLabel)
+												.addPreferredGap(ComponentPlacement.RELATED)))
+						.addComponent(lblNewLabel_1).addGap(132))
 				.addGroup(groupLayout.createSequentialGroup().addGap(201).addGroup(groupLayout
 						.createParallelGroup(Alignment.LEADING)
-						.addComponent(logoutButton, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
+						.addComponent(logoutButton, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
 								.addComponent(eventButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
 										Short.MAX_VALUE)
 								.addComponent(buttonSearch, GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)))
-						.addContainerGap(209, Short.MAX_VALUE)));
+						.addContainerGap(214, Short.MAX_VALUE)));
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup().addGap(29)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
-								.addComponent(nameLabel).addComponent(lblNewLabel_1))
+						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(nameLabel)
+								.addComponent(lblNewLabel_1)
+								.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
 						.addGap(125)
 						.addComponent(buttonSearch, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
 						.addGap(41)

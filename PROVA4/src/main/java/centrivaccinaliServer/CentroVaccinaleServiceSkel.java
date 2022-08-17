@@ -13,6 +13,7 @@ import common.CentroVaccinaleNonEsistente;
 import common.CentroVaccinaleService;
 import common.CittadinoGiaRegistrato;
 import common.CittadinoNonVaccinato;
+import common.CittadinoNonVaccinatoNelCentro;
 
 public class CentroVaccinaleServiceSkel extends Thread {
 
@@ -42,13 +43,11 @@ public class CentroVaccinaleServiceSkel extends Thread {
 					MenuCittadino();
 					break;
 				}
-			} catch (ClassNotFoundException | IOException | CentroVaccinaleNonEsistente e) {
+			} catch (ClassNotFoundException | IOException | CentroVaccinaleNonEsistente | SQLException
+					| CittadinoNonVaccinatoNelCentro e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 				return;
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
@@ -100,7 +99,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 		}
 	}
 
-	private void MenuCittadino() throws SQLException {
+	private void MenuCittadino() throws SQLException, CittadinoNonVaccinatoNelCentro {
 		try {
 			int scelta = interpretaCittadino((String) in.readObject());
 
@@ -111,7 +110,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 					out.writeObject(g.VisualizzaCentro(false, (String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (String) in.readObject(), (Integer) in.readObject(),
 							(String) in.readObject()));
-				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e) {
+				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti | CittadinoNonVaccinatoNelCentro e) {
 					out.writeObject(e);
 				}
 				break;
@@ -144,11 +143,11 @@ public class CentroVaccinaleServiceSkel extends Thread {
 					out.writeObject(g.VisualizzaCentro(true, (String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (String) in.readObject(), (Integer) in.readObject(),
 							(String) in.readObject()));
-				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e) {
+				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti | CittadinoNonVaccinatoNelCentro e) {
 					out.writeObject(e);
 				}
 				break;
-				
+
 			}
 
 		} catch (IOException e) {
@@ -161,7 +160,6 @@ public class CentroVaccinaleServiceSkel extends Thread {
 			e1.printStackTrace();
 		}
 	}
-
 
 	private int interpretaCittadino(String com) {
 		if (com.equals("VISCENTRO"))

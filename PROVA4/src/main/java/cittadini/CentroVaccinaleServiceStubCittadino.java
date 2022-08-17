@@ -7,10 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 
 import centrivaccinaliServer.Server;
@@ -19,7 +16,7 @@ import common.CentroVaccinaleNonEsistente;
 import common.CentroVaccinaleServiceCittadino;
 import common.CittadinoGiaRegistrato;
 import common.CittadinoNonVaccinato;
-import common.ConnectDB;
+import common.CittadinoNonVaccinatoNelCentro;
 
 public class CentroVaccinaleServiceStubCittadino implements CentroVaccinaleServiceCittadino {
 
@@ -34,6 +31,7 @@ public class CentroVaccinaleServiceStubCittadino implements CentroVaccinaleServi
 		out = new ObjectOutputStream(s.getOutputStream());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public LinkedList<String[]> RicercaCentroComuneTipologia(String comune, String cercatoTipo)
 			throws IOException, SQLException {
@@ -65,8 +63,8 @@ public class CentroVaccinaleServiceStubCittadino implements CentroVaccinaleServi
 
 	@Override
 	public String VisualizzaCentro(boolean access, String sceltaEvento, String cercato, String comune,
-			String cercatoTipo, int gravita, String nota)
-			throws IOException, SQLException, CentroVaccinaleNonEsistente, CentriVaccinaliNonEsistenti {
+			String cercatoTipo, int gravita, String nota) throws IOException, SQLException, CentroVaccinaleNonEsistente,
+			CentriVaccinaliNonEsistenti, CittadinoNonVaccinatoNelCentro {
 
 		Object tmp;
 
@@ -98,7 +96,9 @@ public class CentroVaccinaleServiceStubCittadino implements CentroVaccinaleServi
 		} else if (tmp instanceof CentroVaccinaleNonEsistente) {
 			throw (CentroVaccinaleNonEsistente) tmp;
 		} else if (tmp instanceof CentriVaccinaliNonEsistenti) {
-			throw new CentriVaccinaliNonEsistenti();
+			throw (CentriVaccinaliNonEsistenti) tmp;
+		} else if (tmp instanceof CittadinoNonVaccinatoNelCentro) {
+			throw (CittadinoNonVaccinatoNelCentro) tmp;
 		} else if (tmp instanceof String) {
 			return (String) tmp;
 		} else {

@@ -11,7 +11,7 @@ public interface CentroVaccinaleServiceCittadino {
 
 	public String VisualizzaCentro(boolean access, String sceltaEvento, String cercato, String comune,
 			String cercatoTipo, int gravita, String nota)
-			throws IOException, SQLException, CentroVaccinaleNonEsistente, CentriVaccinaliNonEsistenti;
+			throws IOException, SQLException, CentroVaccinaleNonEsistente, CentriVaccinaliNonEsistenti,CittadinoNonVaccinatoNelCentro;
 
 	public LinkedList<String[]> RicercaCentroComuneTipologia(String comune, String cercatoTipo)
 			throws IOException, SQLException;

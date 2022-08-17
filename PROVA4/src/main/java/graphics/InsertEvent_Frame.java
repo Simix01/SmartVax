@@ -1,18 +1,15 @@
 package graphics;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-import javax.swing.text.DefaultStyledDocument;
-
 import cittadini.CentroVaccinaleServiceStubCittadino;
 import common.CentriVaccinaliNonEsistenti;
 import common.CentroVaccinaleNonEsistente;
+import common.CittadinoNonVaccinatoNelCentro;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -36,13 +33,11 @@ public class InsertEvent_Frame implements ActionListener, MouseListener {
 	private JFrame frmInserisciEventoAvverso;
 	private JComboBox eventBox;
 	private JSpinner gravitaField;
-	private DefaultStyledDocument doc;
 	private JTextArea commentArea;
 	private JTextField centroField;
 	private JLabel backLabel;
 	private JButton confirmButton;
 	private JLabel resultLabel;
-	private boolean login;
 
 	/**
 	 * Launch the application.
@@ -59,7 +54,7 @@ public class InsertEvent_Frame implements ActionListener, MouseListener {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
+
 		frmInserisciEventoAvverso = new JFrame();
 		frmInserisciEventoAvverso.setTitle("SmartVax - Inserisci evento avverso");
 		frmInserisciEventoAvverso.setResizable(false);
@@ -173,7 +168,7 @@ public class InsertEvent_Frame implements ActionListener, MouseListener {
 	public void mouseClicked(MouseEvent e) {
 		if (e.getSource() == backLabel) {
 			frmInserisciEventoAvverso.dispose();
-			LoggedIn_Frame myFrame = new LoggedIn_Frame();
+			new LoggedIn_Frame();
 		}
 	}
 
@@ -213,8 +208,10 @@ public class InsertEvent_Frame implements ActionListener, MouseListener {
 
 			try {
 				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino();
-				c.VisualizzaCentro(true, eventBox.getSelectedItem().toString(), centroField.getText(), null, null, (Integer) gravitaField.getValue(), commentArea.getText());
-			} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e1) {
+				c.VisualizzaCentro(true, eventBox.getSelectedItem().toString(), centroField.getText(), null, null,
+						(Integer) gravitaField.getValue(), commentArea.getText());
+			} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti
+					| CittadinoNonVaccinatoNelCentro e1) {
 				resultLabel.setText(e1.getMessage());
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);

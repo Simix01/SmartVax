@@ -7,7 +7,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.im.InputMethodHighlight;
 import java.io.IOException;
 
 import javax.swing.JFrame;

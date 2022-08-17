@@ -16,8 +16,6 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;

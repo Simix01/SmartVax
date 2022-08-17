@@ -35,22 +35,19 @@ public class Server {
 		}
 	}
 
-	public static void main(String[] args) {
-		ConnectDB c = new ConnectDB("postgres", "Nhuari062799!");
 
-		Connection conn = c.connect();
-		try (ServerSocket ser = new ServerSocket(PORT)) {
-			CentroVaccinaleService g = new CentroVaccinaleServiceImpl(conn);
 
-			while (true) {
-				Socket s = ser.accept();
-				CentroVaccinaleServiceSkel cs = new CentroVaccinaleServiceSkel(s, g);
-				cs.start();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
+ public static void main(String[] args) { ConnectDB c = new
+ ConnectDB("postgres", "Nhuari062799!");
+ 
+  Connection conn = c.connect(); try (ServerSocket ser = new
+  ServerSocket(PORT)) { CentroVaccinaleService g = new
+  CentroVaccinaleServiceImpl(conn);
+  
+  while (true) { Socket s = ser.accept(); CentroVaccinaleServiceSkel cs = new
+  CentroVaccinaleServiceSkel(s, g); cs.start(); } } catch (IOException e) {
+  e.printStackTrace(); }
+  
+  }
 }
+ 

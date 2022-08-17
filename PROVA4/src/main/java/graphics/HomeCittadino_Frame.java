@@ -264,7 +264,6 @@ public class HomeCittadino_Frame implements ActionListener, MouseListener {
 
 		if (e.getSource() == loginButton) {
 			// FARE QUERY PER CONTROLLARE CHE L'UTENTE SI SIA LOGGATO CON I DATI CORRETTI
-			// LoggedIn_Frame myFrame = new LoggedIn_Frame(true);
 
 			try {
 				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino();

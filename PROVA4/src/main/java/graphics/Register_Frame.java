@@ -18,7 +18,6 @@ import java.sql.SQLException;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import centrivaccinaliClient.CentroVaccinaleServiceStubOperatore;
 import cittadini.CentroVaccinaleServiceStubCittadino;
 import common.CittadinoGiaRegistrato;
 import common.CittadinoNonVaccinato;

@@ -1,22 +1,17 @@
 package graphics;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
 import javax.swing.GroupLayout.Alignment;
 import java.awt.Color;
 import javax.swing.JLabel;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.LinkedList;
 
 import javax.swing.SwingConstants;
@@ -26,6 +21,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import cittadini.CentroVaccinaleServiceStubCittadino;
 import common.CentriVaccinaliNonEsistenti;
 import common.CentroVaccinaleNonEsistente;
+import common.CittadinoNonVaccinatoNelCentro;
 
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -258,7 +254,8 @@ public class FreeArea_Frame implements ActionListener, MouseListener {
 				c = new CentroVaccinaleServiceStubCittadino();
 				visualizzaArea
 						.setText(c.VisualizzaCentro(false, null, nomeCentroField.getText(), null, null, -1, null));
-			} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e1) {
+			} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti
+					| CittadinoNonVaccinatoNelCentro e1) {
 				visualizzaArea.setText(e1.getMessage());
 				visualizzaArea.setForeground(Color.RED);
 				e1.printStackTrace();
@@ -300,7 +297,8 @@ public class FreeArea_Frame implements ActionListener, MouseListener {
 				c = new CentroVaccinaleServiceStubCittadino();
 				visualizzaArea.setText(
 						c.VisualizzaCentro(false, null, centriBox.getSelectedItem().toString(), null, null, -1, null));
-			} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti e1) {
+			} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti
+					| CittadinoNonVaccinatoNelCentro e1) {
 				visualizzaArea.setText(e1.getMessage());
 				visualizzaArea.setForeground(Color.RED);
 				e1.printStackTrace();

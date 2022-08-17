@@ -17,7 +17,7 @@ import centrivaccinaliServer.Vaccinato;
 public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	private Connection conn;
-	private static String CF;
+	private static String CF="1234567890123456";
 
 	@Override
 	public synchronized boolean Login(String id, String pw) throws SQLException {
@@ -75,7 +75,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	@Override
 	public synchronized String VisualizzaCentro(boolean access, String sceltaEvento, String cercato, String comune,
 			String cercatoTipo, int gravita, String nota)
-			throws IOException, SQLException, CentroVaccinaleNonEsistente, CentriVaccinaliNonEsistenti {
+			throws IOException, SQLException, CentroVaccinaleNonEsistente, CentriVaccinaliNonEsistenti, CittadinoNonVaccinatoNelCentro {
 		String[] trovato = null;
 		String info = "";
 
@@ -91,14 +91,11 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 					+ trovato[3] + " " + trovato[4] + " " + trovato[5] + " " + trovato[6] + "\n" + "Tipologia -> "
 					+ trovato[7];
 
-			if (access) // controllo che sia avvenuto l'accesso tramite il login
-				inserisciEventiAvversi(trovato[0], sceltaEvento, gravita, nota); // funzione per
-			// l'inserimento
-			// degli eventi
-			// avversi (solo
-			// tramite login effettuato)
+			if (access)
+				inserisciEventiAvversi(trovato[0], sceltaEvento, gravita, nota);
+
 			else
-				info += StatisticheEventiAvversi(); // stampa delle statistiche relative agli eventi avversi
+				info += StatisticheEventiAvversi();
 
 		} catch (NumberFormatException e) {
 			System.err.println(
@@ -165,8 +162,6 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 			preparedStmt.addBatch(queryCrea);
 		}
-
-		// Date date = new SimpleDateFormat("dd/MM/yyyy").parse(vaccinato.getData());
 
 		String queryAggiungiVaccinato = "INSERT INTO vaccinati_" + nomeCentro.toLowerCase()
 				+ "(idvaccinazione,nomevaccino,datavaccino,nome,cognome,codfiscale,nomecentro)" + " VALUES("
@@ -303,7 +298,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	}
 
 	private void inserisciEventiAvversi(String nomeCentro, String sceltaEvento, int gravita, String nota)
-			throws SQLException {
+			throws SQLException, CittadinoNonVaccinatoNelCentro {
 
 		if (verificaVaccinato(nomeCentro, CF)) {
 
@@ -314,6 +309,9 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 			stmt.executeUpdate();
 
+		}
+		else {
+			throw new CittadinoNonVaccinatoNelCentro();
 		}
 	}
 
