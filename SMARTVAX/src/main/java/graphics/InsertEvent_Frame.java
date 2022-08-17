@@ -65,7 +65,7 @@ public class InsertEvent_Frame implements ActionListener, MouseListener {
 		frmInserisciEventoAvverso.setVisible(true);
 
 		JLabel lblNewLabel = new JLabel(
-				"<html>In questa sezione è possibile inserire eventi avversi riscontrati post vaccinazione;<br>Questi eventi verranno catalogati e suddivisi per centro vaccinale.");
+				"<html>In questa sezione e' possibile inserire eventi avversi riscontrati post vaccinazione;<br>Questi eventi verranno catalogati e suddivisi per centro vaccinale.");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -77,7 +77,7 @@ public class InsertEvent_Frame implements ActionListener, MouseListener {
 
 		JLabel lblNewLabel_1 = new JLabel("Evento avverso: ");
 
-		JLabel lblNewLabel_2 = new JLabel("Gravita'�: ");
+		JLabel lblNewLabel_2 = new JLabel("Gravita': ");
 
 		// campo per prelevare valore gravità
 		gravitaField = new JSpinner();

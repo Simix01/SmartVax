@@ -122,7 +122,7 @@ public class FreeArea_Frame implements ActionListener, MouseListener {
 		back.setFont(new Font("Tahoma", Font.BOLD, 12));
 		back.addMouseListener(this);
 
-		JLabel lblNewLabel = new JLabel("Dopo aver inserito comune e tipologia, scegliere centro dal menù: ");
+		JLabel lblNewLabel = new JLabel("Dopo aver inserito comune e tipologia, scegliere centro dal menu: ");
 
 		// box in cui verranno inseriti dinamicamente i nomi dei centri con comune e
 		// tipologia inseriti
