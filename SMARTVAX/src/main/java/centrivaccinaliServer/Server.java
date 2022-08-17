@@ -38,7 +38,7 @@ public class Server {
 
 
  public static void main(String[] args) { ConnectDB c = new
- ConnectDB("postgres", "Nhuari062799!");
+ ConnectDB("postgres", "Bunny180601");
  
   Connection conn = c.connect(); try (ServerSocket ser = new
   ServerSocket(PORT)) { CentroVaccinaleService g = new

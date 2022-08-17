@@ -45,7 +45,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		LinkedList<String[]> infoCentri = new LinkedList<String[]>();
 		ResultSet rs = null;
 		String query = "SELECT * FROM centrivaccinali where comune = '" + comune + "' AND tipologia = '"
-				+ cercatoTipo.toLowerCase() + "'";
+				+ cercatoTipo + "'";
 
 		rs = stmt.executeQuery(query);
 

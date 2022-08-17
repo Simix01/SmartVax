@@ -110,7 +110,8 @@ public class CentroVaccinaleServiceSkel extends Thread {
 					out.writeObject(g.VisualizzaCentro(false, (String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (String) in.readObject(), (Integer) in.readObject(),
 							(String) in.readObject()));
-				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti | CittadinoNonVaccinatoNelCentro e) {
+				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti
+						| CittadinoNonVaccinatoNelCentro e) {
 					out.writeObject(e);
 				}
 				break;
@@ -137,13 +138,15 @@ public class CentroVaccinaleServiceSkel extends Thread {
 				} catch (SQLException e) {
 					out.writeObject(e);
 				}
+				break;
 			case 5:
 				try {
 
 					out.writeObject(g.VisualizzaCentro(true, (String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (String) in.readObject(), (Integer) in.readObject(),
 							(String) in.readObject()));
-				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti | CittadinoNonVaccinatoNelCentro e) {
+				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti
+						| CittadinoNonVaccinatoNelCentro e) {
 					out.writeObject(e);
 				}
 				break;
