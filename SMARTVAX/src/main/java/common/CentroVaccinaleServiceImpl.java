@@ -196,7 +196,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	@Override
 	public synchronized void registraCittadino(String nome, String cognome, String email, String username,
 			String password, String cf, int id)
-			throws IOException, CittadinoGiaRegistrato, SQLException, CittadinoNonVaccinato, CodiceFiscaleErrato {
+			throws IOException, CittadinoGiaRegistrato, SQLException, CittadinoNonVaccinato, CodiceFiscaleErrato, UserEmailGiaUsato {
 		try {
 
 			if (cf.length() == 16) { //controllo su lunghezza codice fiscale
@@ -217,7 +217,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 			} else
 				throw new CodiceFiscaleErrato();
 		} catch (SQLException e) {
-			System.err.print("Username/Email già usato oppure " + new CittadinoGiaRegistrato());
+			throw new UserEmailGiaUsato(); 
 		}
 	}
 

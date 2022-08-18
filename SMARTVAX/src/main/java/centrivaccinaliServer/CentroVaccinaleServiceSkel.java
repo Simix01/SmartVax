@@ -16,6 +16,7 @@ import common.CittadinoGiaRegistrato;
 import common.CittadinoNonVaccinato;
 import common.CittadinoNonVaccinatoNelCentro;
 import common.CodiceFiscaleErrato;
+import common.UserEmailGiaUsato;
 
 public class CentroVaccinaleServiceSkel extends Thread {
 
@@ -32,22 +33,26 @@ public class CentroVaccinaleServiceSkel extends Thread {
 		g = c;
 	}
 
-	//skeleton eredita la classe thread quindi esegue fino a quando non viene killato il processo
+	// skeleton eredita la classe thread quindi esegue fino a quando non viene
+	// killato il processo
 	public void run() {
 		while (true) {
 			try {
-				int user = interpretaUser((String) in.readObject()); //chiama la funzione per interpretare l'identita' dell'utente 
+				int user = interpretaUser((String) in.readObject()); // chiama la funzione per interpretare l'identita'
+																		// dell'utente
 				switch (user) {
 				case 1:
-					MenuOperatore(); //l'utente che utilizza l'app e' un operatore
+					MenuOperatore(); // l'utente che utilizza l'app e' un operatore
 					break;
 
 				case 2:
-					MenuCittadino(); //l'utente che utilizza l'app e' un cittadino
+					MenuCittadino(); // l'utente che utilizza l'app e' un cittadino
 					break;
 				}
 			} catch (ClassNotFoundException | IOException | CentroVaccinaleNonEsistente | SQLException
-					| CittadinoNonVaccinatoNelCentro | CapErrato | CodiceFiscaleErrato e) { //varie eccezioni sollevate
+					| CittadinoNonVaccinatoNelCentro | CapErrato | CodiceFiscaleErrato | UserEmailGiaUsato e) { // varie
+																												// eccezioni
+																												// sollevate
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 				return;
@@ -55,51 +60,55 @@ public class CentroVaccinaleServiceSkel extends Thread {
 		}
 	}
 
-	//operazioni che puo' svolgere un operatore
-	private void MenuOperatore() throws CentroVaccinaleNonEsistente, CapErrato, CodiceFiscaleErrato, IOException {
+	// operazioni che puo' svolgere un operatore
+	private void MenuOperatore()
+			throws CentroVaccinaleNonEsistente, CapErrato, CodiceFiscaleErrato, IOException, UserEmailGiaUsato {
 		try {
 
-			int scelta = interpretaOperatore((String) in.readObject()); //interpreto l'operazione selezionata
+			int scelta = interpretaOperatore((String) in.readObject()); // interpreto l'operazione selezionata
 
 			switch (scelta) {
-			case 1: //registrazione di un nuovo centro, vengono presi i dati dallo stream di comunicazione
+			case 1: // registrazione di un nuovo centro, vengono presi i dati dallo stream di
+					// comunicazione
 				try {
 					g.registraCentroVaccinale((String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (int) in.readObject(), (String) in.readObject());
-					out.writeObject("OK"); //protocollo applicativo --> conferma
-				} catch (CentroVaccinaleGiaRegistrato | CapErrato e) { //eccezioni sollevate
+					out.writeObject("OK"); // protocollo applicativo --> conferma
+				} catch (CentroVaccinaleGiaRegistrato | CapErrato e) { // eccezioni sollevate
 					out.writeObject(e);
 				}
 				break;
-			case 2: //registrazione di un nuovo vaccinato, vengono presi i dati dallo stream di comunicazione
+			case 2: // registrazione di un nuovo vaccinato, vengono presi i dati dallo stream di
+					// comunicazione
 				try {
 					g.registraVaccinato((String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (String) in.readObject(), (Date) in.readObject());
-					out.writeObject("OK"); //protocollo applicativo --> conferma
-				} catch (CentroVaccinaleNonEsistente | CodiceFiscaleErrato | SQLException e) { //eccezioni sollevate
+					out.writeObject("OK"); // protocollo applicativo --> conferma
+				} catch (CentroVaccinaleNonEsistente | CodiceFiscaleErrato | SQLException e) { // eccezioni sollevate
 					out.writeObject(e);
 					e.printStackTrace();
 				}
 				break;
 			default: {
-				//si e' verificato un errore
+				// si e' verificato un errore
 				MenuOperatore();
 			}
 			}
 
 		} catch (IOException | NumberFormatException | ClassNotFoundException e) {
-				out.writeObject(e);
-			}
+			out.writeObject(e);
 		}
+	}
 
-	//operazioni che puo' svolgere un cittadino
-	private void MenuCittadino() throws SQLException, CittadinoNonVaccinatoNelCentro {
+	// operazioni che puo' svolgere un cittadino
+	private void MenuCittadino() throws SQLException, CittadinoNonVaccinatoNelCentro, UserEmailGiaUsato {
 		try {
-			int scelta = interpretaCittadino((String) in.readObject()); //interpreto l'operazione selezionata
+			int scelta = interpretaCittadino((String) in.readObject()); // interpreto l'operazione selezionata
 
 			switch (scelta) {
-			case 1: //visualizza informazioni centro vaccinale, nome fornito dal cittadino lato client
+			case 1: // visualizza informazioni centro vaccinale, nome fornito dal cittadino lato
+					// client
 				try {
 
 					out.writeObject(g.VisualizzaCentro(false, (String) in.readObject(), (String) in.readObject(),
@@ -110,38 +119,40 @@ public class CentroVaccinaleServiceSkel extends Thread {
 					out.writeObject(e);
 				}
 				break;
-			case 2: //il cittadino si vuole registrare
+			case 2: // il cittadino si vuole registrare
 				try {
 					g.registraCittadino((String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
 							(Integer) in.readObject());
 					out.writeObject("OK");
-				} catch (IOException | CittadinoGiaRegistrato | SQLException | CittadinoNonVaccinato | CodiceFiscaleErrato e) { //eccezioni sollevate
+				} catch (IOException | CittadinoGiaRegistrato | SQLException | CittadinoNonVaccinato
+						| CodiceFiscaleErrato | UserEmailGiaUsato e) { // eccezioni sollevate
 					out.writeObject(e);
 				}
 				break;
-			case 3: //il cittadino richiede di accedere fornendo i dati con cui si e' registrato
+			case 3: // il cittadino richiede di accedere fornendo i dati con cui si e' registrato
 				try {
 					out.writeObject(g.Login((String) in.readObject(), (String) in.readObject()));
-				} catch (IOException | SQLException e) { //eccezioni sollevate
+				} catch (IOException | SQLException e) { // eccezioni sollevate
 					out.writeObject(e);
 				}
 				break;
-			case 4: //effettuare ricerca tramite comune e tipologia forniti da cittadino lato client
+			case 4: // effettuare ricerca tramite comune e tipologia forniti da cittadino lato
+					// client
 				try {
 					out.writeObject(g.RicercaCentroComuneTipologia((String) in.readObject(), (String) in.readObject()));
-				} catch (SQLException e) { //eccezioni sollevate
+				} catch (SQLException e) { // eccezioni sollevate
 					out.writeObject(e);
 				}
 				break;
-			case 5: //il cittadino sta richiedendo di inserire un evento avverso nel database
+			case 5: // il cittadino sta richiedendo di inserire un evento avverso nel database
 				try {
 
 					out.writeObject(g.VisualizzaCentro(true, (String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (String) in.readObject(), (Integer) in.readObject(),
 							(String) in.readObject()));
 				} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti
-						| CittadinoNonVaccinatoNelCentro e) { //eccezioni sollevate
+						| CittadinoNonVaccinatoNelCentro e) { // eccezioni sollevate
 					out.writeObject(e);
 				}
 				break;
@@ -160,24 +171,25 @@ public class CentroVaccinaleServiceSkel extends Thread {
 	}
 
 	private int interpretaCittadino(String com) {
-		if (com.equals("VISCENTRO")) //protocollo applicativo --> visualizza informazioni centro vaccianale
+		if (com.equals("VISCENTRO")) // protocollo applicativo --> visualizza informazioni centro vaccianale
 			return 1;
-		if (com.equals("REGCITT")) //protocollo applicativo --> registrazione cittadino
+		if (com.equals("REGCITT")) // protocollo applicativo --> registrazione cittadino
 			return 2;
-		if (com.equals("LOGIN")) //protocollo applicativo --> richiesta di accesso
+		if (com.equals("LOGIN")) // protocollo applicativo --> richiesta di accesso
 			return 3;
-		if (com.equals("RICERCACOMUNETIPOLOGIA")) //protocollo applicativo --> ricerca centro tramite comune e tipologia
+		if (com.equals("RICERCACOMUNETIPOLOGIA")) // protocollo applicativo --> ricerca centro tramite comune e
+													// tipologia
 			return 4;
-		if (com.equals("EVENTOAVV")) //protocollo applicativo --> visualizza centro + evento avverso
-			return 5; 
+		if (com.equals("EVENTOAVV")) // protocollo applicativo --> visualizza centro + evento avverso
+			return 5;
 		return -1;
 	}
 
-	//qui viene interpretata la richiesta fatta dall'operatore lato client
+	// qui viene interpretata la richiesta fatta dall'operatore lato client
 	private int interpretaOperatore(String com) {
-		if (com.equals("REGCENTRO")) //protocollo applicativo --> inserimento nuovo centro
+		if (com.equals("REGCENTRO")) // protocollo applicativo --> inserimento nuovo centro
 			return 1;
-		if (com.equals("REGVACC")) //protocollo applicativo --> inserimento nuova vaccinazione
+		if (com.equals("REGVACC")) // protocollo applicativo --> inserimento nuova vaccinazione
 			return 2;
 		return -1;
 	}

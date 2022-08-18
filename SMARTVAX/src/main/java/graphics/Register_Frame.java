@@ -22,6 +22,7 @@ import cittadini.CentroVaccinaleServiceStubCittadino;
 import common.CittadinoGiaRegistrato;
 import common.CittadinoNonVaccinato;
 import common.CodiceFiscaleErrato;
+import common.UserEmailGiaUsato;
 
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
@@ -217,27 +218,38 @@ public class Register_Frame implements ActionListener, MouseListener {
 
 		if (e.getSource() == registerButton) {
 
-			resultLabel.setText(""); //Setto la label vuota
+			resultLabel.setText(""); // Setto la label vuota
 
 			try {
-				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino(); //istanzio oggetto centrovaccinaleservicestubcittadino
+				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino(); // istanzio oggetto
+																									// centrovaccinaleservicestubcittadino
 				c.registraCittadino(nomeField.getText(), cognomeField.getText(), mailField.getText(),
 						usernameField.getText(), String.valueOf(passwordField.getPassword()), codFiscaleField.getText(),
-						Integer.parseInt(idVaccinazioneField.getText())); //chiamo il metodo per registrare un cittadino
+						Integer.parseInt(idVaccinazioneField.getText())); // chiamo il metodo per registrare un
+																			// cittadino
 
-			} catch (IOException | NumberFormatException | SQLException e1) { //eccezioni sollevate per dati inseriti in modo errato
+			} catch (IOException | NumberFormatException | SQLException e1) { // eccezioni sollevate per dati inseriti
+																				// in modo errato
 				resultLabel.setText("Errore nell'inserimento dei dati");
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);
 
-			} catch (CittadinoGiaRegistrato | CodiceFiscaleErrato | CittadinoNonVaccinato e1) { //eccezioni sollevate per dati inseriti in modo errato
+			} catch (CittadinoGiaRegistrato | CodiceFiscaleErrato | CittadinoNonVaccinato | UserEmailGiaUsato e1) { // eccezioni
+																													// sollevate
+																													// per
+																													// dati
+																													// inseriti
+																													// in
+																													// modo
+																													// errato
 				resultLabel.setText(e1.getMessage());
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);
 
 			} finally {
 
-				if (resultLabel.getText().isBlank()) { //se la label e' vuota allora non sono stati riscontrati errori in fase di inserimento dei dati
+				if (resultLabel.getText().isBlank()) { // se la label e' vuota allora non sono stati riscontrati errori
+														// in fase di inserimento dei dati
 					resultLabel.setText("Registrazione andata a buon fine");
 					resultLabel.setForeground(Color.blue);
 					resultLabel.setVisible(true);
