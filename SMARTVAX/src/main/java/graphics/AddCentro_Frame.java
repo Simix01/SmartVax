@@ -321,18 +321,18 @@ public class AddCentro_Frame implements ActionListener, MouseListener, FocusList
 			resultLabel.setText("");
 
 			try {
-				CentroVaccinaleServiceStubOperatore c = new CentroVaccinaleServiceStubOperatore();
+				CentroVaccinaleServiceStubOperatore c = new CentroVaccinaleServiceStubOperatore(); //istanzia oggetto centrovaccinaleservicestuboperatore
 
 				c.registraCentroVaccinale(nomeCentroField.getText(), tipoLuogoBox.getSelectedItem().toString(),
 						nomeLuogoField.getText(), numCivicoField.getText(), comuneField.getText(),
 						siglaProvField.getText(), Integer.parseInt(capField.getText()),
-						tipologiaBox.getSelectedItem().toString());
+						tipologiaBox.getSelectedItem().toString()); //chiama la funzione per registrare un nuovo centro vaccinale
 
 			} catch (IOException | NumberFormatException e1) {
 				resultLabel.setText("Errore nell'inserimento dei dati");
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);
-			} catch (CentroVaccinaleGiaRegistrato | CapErrato e1) {
+			} catch (CentroVaccinaleGiaRegistrato | CapErrato e1) { //errori nell'inserimento
 				resultLabel.setText(e1.getMessage());
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);

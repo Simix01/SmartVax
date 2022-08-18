@@ -107,12 +107,12 @@ public class Homepage_Frame implements ActionListener {
 
 		if (e.getSource() == opButton) {
 			frmSmartvax.dispose();
-			HomeOperatore_Frame myWindow = new HomeOperatore_Frame();
+			HomeOperatore_Frame myWindow = new HomeOperatore_Frame(); //schermata operatore
 		}
 
 		if (e.getSource() == citButton) {
 			frmSmartvax.dispose();
-			HomeCittadino_Frame myWindow = new HomeCittadino_Frame();
+			HomeCittadino_Frame myWindow = new HomeCittadino_Frame(); //schermata cittadino
 		}
 
 	}

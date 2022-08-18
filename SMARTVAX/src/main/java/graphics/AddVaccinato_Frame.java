@@ -218,12 +218,11 @@ public class AddVaccinato_Frame implements ActionListener, MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -246,20 +245,18 @@ public class AddVaccinato_Frame implements ActionListener, MouseListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == addButton) {
-
-			// QUERY DI CONTROLLO SE IL CENTRO VACCINALE è PRESENTE ALL'INTERNO DEL DB, SE
-			// PRESENTE ALLORA ESEGUE:
+			
 			resultLabel.setText("");
 
 			try {
 
 				Date date = new Date(dataVaccinoChooser.getDate().getTime());
 
-				CentroVaccinaleServiceStubOperatore c = new CentroVaccinaleServiceStubOperatore();
+				CentroVaccinaleServiceStubOperatore c = new CentroVaccinaleServiceStubOperatore(); //istanzia oggetto centrovaccinaleservicestuboperatore
 				c.registraVaccinato(nomeField.getText(), cognomeField.getText(), nomeCentroField.getText(),
-						codFiscaleField.getText(), nomeVaccinoBox.getSelectedItem().toString(), date);
+						codFiscaleField.getText(), nomeVaccinoBox.getSelectedItem().toString(), date); //chiama funzione per registrare nuova vaccinazione
 
-			} catch (IOException | SQLException e1) {
+			} catch (IOException | SQLException e1) { //vari errori
 				resultLabel.setText("Error");
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);
@@ -279,13 +276,6 @@ public class AddVaccinato_Frame implements ActionListener, MouseListener {
 					resultLabel.setVisible(true);
 				}
 			}
-
-			// ALTRIMENTI ESEGUE:
-			/*
-			 * resultLabel.
-			 * setText("Il centro vaccinale inserito non è presente nel database");
-			 * resultLabel.setForeground(Color.red); resultLabel.setVisible(true);
-			 */
 		}
 	}
 }

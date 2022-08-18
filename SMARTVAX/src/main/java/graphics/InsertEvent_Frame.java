@@ -207,11 +207,13 @@ public class InsertEvent_Frame implements ActionListener, MouseListener {
 			resultLabel.setText("");
 
 			try {
-				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino();
+				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino(); //istanzia centrovaccinaleservicestubcittadino
+				
+				//viene passato come primo parametro per andare ad usare la sezione per inserire eventi avversi della funzione visualizzacentro
 				c.VisualizzaCentro(true, eventBox.getSelectedItem().toString(), centroField.getText(), null, null,
-						(Integer) gravitaField.getValue(), commentArea.getText());
+						(Integer) gravitaField.getValue(), commentArea.getText()); //chiama funzione visualizzacentro per inserire evento avverso
 			} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti
-					| CittadinoNonVaccinatoNelCentro e1) {
+					| CittadinoNonVaccinatoNelCentro e1) { //se l'inserimento contiene valori non corretti allora si visualizza il messaggio di errore
 				resultLabel.setText(e1.getMessage());
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);

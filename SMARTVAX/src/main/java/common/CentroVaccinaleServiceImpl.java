@@ -17,38 +17,39 @@ import centrivaccinaliServer.Vaccinato;
 
 public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
-	private Connection conn;
-	private static String CF = "1234567890123456";
+	private Connection conn; //connessione 
+	private static String CF;
 
+	//viene effettuata la query per vedere se i dati inseriti dall'utente che richiede di accedere siano corretti
 	@Override
 	public synchronized boolean Login(String id, String pw) throws SQLException {
 		String queryVerificaLogin = "SELECT codfiscale" + " FROM cittadiniregistrati" + " WHERE username='" + id
-				+ "' AND password= '" + pw + "'";
+				+ "' AND password= '" + pw + "'"; //stringa che contiene la query
 
-		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE); 
 
-		ResultSet rs = stmt.executeQuery(queryVerificaLogin);
+		ResultSet rs = stmt.executeQuery(queryVerificaLogin); //viene eseguita la query
 
-		if (rs.isBeforeFirst()) {
+		if (rs.isBeforeFirst()) { //controlla se il result set fornito dalla query e' vuoto
 			rs.next();
-			CF = rs.getString("codFiscale");
+			CF = rs.getString("codFiscale"); //prelevo il valore del codice fiscale e lo salvo in una variabile globale
 			return true;
 		} else
 			return false;
 	}
 
+	//funzione per cercare centro tramite comune e tipologia
 	@Override
 	public synchronized LinkedList<String[]> RicercaCentroComuneTipologia(String comune, String cercatoTipo)
 			throws SQLException {
 		Statement stmt = conn.createStatement();
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		String[] vettore;
-		LinkedList<String[]> infoCentri = new LinkedList<String[]>();
+		String[] vettore; //salvo i valori presi dalla GUI in un vettore
+		LinkedList<String[]> infoCentri = new LinkedList<String[]>(); //salvo le informazioni dei centri in una linkedlist
 		ResultSet rs = null;
 		String query = "SELECT * FROM centrivaccinali where comune = '" + comune + "' AND tipologia = '" + cercatoTipo
 				+ "'";
 
-		rs = stmt.executeQuery(query);
+		rs = stmt.executeQuery(query); //esegue la query
 
 		if (rs.isBeforeFirst()) {
 			while (rs.next()) {
@@ -67,47 +68,48 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		} else
 			return null;
 		rs.close();
-		if (!infoCentri.isEmpty())
+		if (!infoCentri.isEmpty()) //se non e' vuota allora ritorna la lista
 			return infoCentri;
 		else
 			return null;
 	}
 
+	//funzione per visualizzare i dati del centro vaccinale
 	@Override
 	public synchronized String VisualizzaCentro(boolean access, String sceltaEvento, String cercato, String comune,
 			String cercatoTipo, int gravita, String nota) throws IOException, SQLException, CentroVaccinaleNonEsistente,
 			CentriVaccinaliNonEsistenti, CittadinoNonVaccinatoNelCentro {
-		String[] trovato = null;
+		String[] trovato = null; //salvo le informazioni del centro trovato dentro un vettore di stringhe
 		String info = "";
 
 		try {
 
 			do {
-				trovato = RicercaCentroNome(cercato);
+				trovato = RicercaCentroNome(cercato); //eseguo la ricerca
 				if (trovato == null)
 					throw new CentroVaccinaleNonEsistente();
 			} while (trovato == null);
 
 			info += "\nNome centro -> " + trovato[0] + "\n" + "Indirizzo -> " + trovato[1] + " " + trovato[2] + " "
 					+ trovato[3] + " " + trovato[4] + " " + trovato[5] + " " + trovato[6] + "\n" + "Tipologia -> "
-					+ trovato[7];
+					+ trovato[7]; //salvo le informazioni dentro una stringa
 
-			if (access)
+			if (access) //Se l'utente ha effettuato l'accesso puo' inserire un evento avverso
 				inserisciEventiAvversi(trovato[0], sceltaEvento, gravita, nota);
 
 			else
-				info += StatisticheEventiAvversi();
+				info += StatisticheEventiAvversi(); //ritorna valori + statistiche ricavate dalla funzione
 
 		} catch (NumberFormatException e) {
-			System.err.println(
-					"HAI INSERITO UN CARATTERE E NON UN NUMERO/HAI SCHIACCIATO INVIO SENZA SCEGLIERE UN NUMERO!!!");
+			e.printStackTrace();
 		} catch (NullPointerException e) {
-			System.err.println("Si è verificato un errore.");
+			e.printStackTrace();
 		}
 
 		return info;
 	}
 
+	//funzione per registrare centro vaccinale
 	@Override
 	public synchronized void registraCentroVaccinale(String nome, String tipoVia, String nomeVia, String numCiv,
 			String comune, String sigProv, int cap, String tipologia)
@@ -115,9 +117,9 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 		try {
 
-			if (!findCentroVac(nome)) {
+			if (!findCentroVac(nome)) { //se non e' presente il centro vaccinale procede con la registrazione
 
-				if (String.valueOf(cap).length() == 5) {
+				if (String.valueOf(cap).length() == 5) { //controllo sul valore del cap, deve essere di 5 caratteri
 
 					String queryInsert = "insert into centrivaccinali (nomecentro,tipoluogo,nomeluogo,numcivico,comune,siglaprovincia,cap,tipologia) "
 							+ "values ('" + nome + "','" + tipoVia + "','" + nomeVia + "','" + numCiv + "','" + comune
@@ -137,25 +139,25 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		}
 	}
 
+	//funzione per registrare centro vaccinale
 	@Override
 	public synchronized void registraVaccinato(String nome, String cognome, String nomeCentro, String codFiscale,
 			String vaccino, Date date)
 			throws IOException, SQLException, CentroVaccinaleNonEsistente, CodiceFiscaleErrato {
 
 		Statement preparedStmt = conn.createStatement();
-		new BufferedReader(new InputStreamReader(System.in));
 
-		if (!findCentroVac(nomeCentro))
+		if (!findCentroVac(nomeCentro)) //se il centro inserito non e' presente nel database viene sollevata l'eccezione
 			throw new CentroVaccinaleNonEsistente();
 
-		if (codFiscale.length() != 16)
+		if (codFiscale.length() != 16) //controllo sull'inserimento del codice fiscale, deve essere di 16 caratteri
 			throw new CodiceFiscaleErrato();
 
-		Vaccinato vaccinato = new Vaccinato(nomeCentro, nome, cognome, codFiscale, vaccino);
+		Vaccinato vaccinato = new Vaccinato(nomeCentro, nome, cognome, codFiscale, vaccino); //creo oggetto vaccinato con i dati inseriti
 
 		String queryString = "select exists" + "(select * from information_schema.tables\r\n"
 				+ "where table_schema = 'public' AND table_name = 'vaccinati_" + nomeCentro.toLowerCase()
-				+ "') as value";
+				+ "') as value"; //query per verificare se la tabella vaccinati_nomecentrovaccinale e' gia' presente o meno
 
 		Statement stmt = conn.createStatement();
 
@@ -164,7 +166,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		rs.next();
 		boolean exist = rs.getBoolean("value");
 		rs.close();
-		if (!exist) {
+		if (!exist) { //se non esiste viene creata
 
 			String queryCrea = "CREATE TABLE Vaccinati_" + nomeCentro + " (" + "idVaccinazione int PRIMARY KEY,"
 					+ "nomeVaccino varchar(20) NOT NULL," + "dataVaccino date NOT NULL," + "Nome VARCHAR(25) NOT NULL,"
@@ -177,12 +179,12 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		String queryAggiungiVaccinato = "INSERT INTO vaccinati_" + nomeCentro.toLowerCase()
 				+ "(idvaccinazione,nomevaccino,datavaccino,nome,cognome,codfiscale,nomecentro)" + " VALUES("
 				+ vaccinato.getId() + ",'" + vaccino + "','" + date + "','" + nome + "','" + cognome + "','"
-				+ codFiscale + "','" + nomeCentro + "')";
+				+ codFiscale + "','" + nomeCentro + "')"; //query per aggiungere nuovo vaccinato nel centro giusto
 
 		preparedStmt.addBatch(queryAggiungiVaccinato);
 
 		String querySiVaccinaString = "INSERT INTO vaccinazioni VALUES ('" + codFiscale + "'," + vaccinato.getId()
-				+ ")";
+				+ ")"; //query per registrare correlazione fra codice fiscale e id vaccinazione
 
 		preparedStmt.addBatch(querySiVaccinaString);
 
@@ -190,15 +192,16 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	}
 
+	//funzione per registrare un cittadino
 	@Override
 	public synchronized void registraCittadino(String nome, String cognome, String email, String username,
 			String password, String cf, int id)
 			throws IOException, CittadinoGiaRegistrato, SQLException, CittadinoNonVaccinato, CodiceFiscaleErrato {
 		try {
 
-			if (cf.length() == 16) {
+			if (cf.length() == 16) { //controllo su lunghezza codice fiscale
 
-				if (controlloId(id, cf)) {
+				if (controlloId(id, cf)) { //controllo su id e codice fiscale inserito
 
 					String queryInserimento = "INSERT INTO cittadiniregistrati(nome,cognome,codfiscale,mail,username,password) "
 							+ "VALUES ('" + nome + "','" + cognome + "','" + cf + "','" + email + "','" + username
@@ -218,11 +221,12 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		}
 	}
 
-	public CentroVaccinaleServiceImpl(Connection conn) {
+	public CentroVaccinaleServiceImpl(Connection conn) { //costruisce oggetto centrovaccinaleserviceimpl fornendo dati della connessione
 
 		this.conn = conn;
 	}
 
+	//funzione per controllare che l'id inserito dall'utente in fase di registrazione corrisponda all'id assegnato in fase di vaccinazione
 	private boolean controlloId(int id, String cf) throws SQLException {
 
 		String queryControlloId = "select idvaccinazione" + " from vaccinazioni " + " where codfiscale='" + cf + "'";
@@ -241,6 +245,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		return false;
 	}
 
+	//funzione per verificare che il centro vaccinale fornito come parametro sia presente nel database
 	private boolean findCentroVac(String nomeCentro) throws SQLException {
 
 		String queryControllo = "select nomecentro from centrivaccinali where nomecentro ='" + nomeCentro + "'";
@@ -257,6 +262,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		}
 	}
 
+	//funzione per verificare che un utente si sia effettivamente vaccinato in un dato centro vaccinale, usata per permettergli di inserire eventi avversi
 	private boolean verificaVaccinato(String nomeCentro, String CF) throws SQLException {
 
 		ResultSet rs = null;
@@ -278,9 +284,10 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	}
 
+	//funzione per cercare un centro tramite nome e prelevarne le informazioni
 	private String[] RicercaCentroNome(String cercato) throws SQLException, CentroVaccinaleNonEsistente {
 		new BufferedReader(new InputStreamReader(System.in));
-		String[] vettore = new String[8];
+		String[] vettore = new String[8]; //vettore usato per salvare informazioni del centro
 		boolean trovato = false;
 		ResultSet rs = null;
 		String queryRicerca = "select *" + " from centrivaccinali" + " where nomecentro='" + cercato + "'";
@@ -312,6 +319,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	}
 
+	//funzione per inserire eventi avversi
 	private void inserisciEventiAvversi(String nomeCentro, String sceltaEvento, int gravita, String nota)
 			throws SQLException, CittadinoNonVaccinatoNelCentro {
 
@@ -329,6 +337,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		}
 	}
 
+	//funzione per calcolare e fornire dati statistici relativi agli eventi avversi registrati in un dato centro vaccinale
 	private String StatisticheEventiAvversi() throws SQLException {
 		Statement stmt = conn.createStatement();
 

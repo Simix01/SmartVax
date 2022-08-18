@@ -138,12 +138,12 @@ public class HomeOperatore_Frame implements ActionListener, MouseListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == nuovoCentroButton) {
 			frmHomeOperatore.dispose();
-			AddCentro_Frame myFrame = new AddCentro_Frame();
+			AddCentro_Frame myFrame = new AddCentro_Frame(); //va ad aggiungere un centro
 		}
 		
 		if(e.getSource() == nuovoVaccinatoButton) {
 			frmHomeOperatore.dispose();
-			AddVaccinato_Frame myFrame = new AddVaccinato_Frame();
+			AddVaccinato_Frame myFrame = new AddVaccinato_Frame(); //va ad aggiungere un vaccinato
 		}
 	}
 

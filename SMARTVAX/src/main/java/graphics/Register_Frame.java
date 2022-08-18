@@ -217,41 +217,32 @@ public class Register_Frame implements ActionListener, MouseListener {
 
 		if (e.getSource() == registerButton) {
 
-			// INSERIRE QUERY DI CONTROLLO, SE LE QUERY DANNO ESITO POSITIVO ALLORA
-			// ESEGUIRE:
-
-			resultLabel.setText("");
+			resultLabel.setText(""); //Setto la label vuota
 
 			try {
-				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino();
+				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino(); //istanzio oggetto centrovaccinaleservicestubcittadino
 				c.registraCittadino(nomeField.getText(), cognomeField.getText(), mailField.getText(),
 						usernameField.getText(), String.valueOf(passwordField.getPassword()), codFiscaleField.getText(),
-						Integer.parseInt(idVaccinazioneField.getText()));
+						Integer.parseInt(idVaccinazioneField.getText())); //chiamo il metodo per registrare un cittadino
 
-			} catch (IOException | NumberFormatException | SQLException e1) {
+			} catch (IOException | NumberFormatException | SQLException e1) { //eccezioni sollevate per dati inseriti in modo errato
 				resultLabel.setText("Errore nell'inserimento dei dati");
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);
 
-			} catch (CittadinoGiaRegistrato | CodiceFiscaleErrato | CittadinoNonVaccinato e1) {
+			} catch (CittadinoGiaRegistrato | CodiceFiscaleErrato | CittadinoNonVaccinato e1) { //eccezioni sollevate per dati inseriti in modo errato
 				resultLabel.setText(e1.getMessage());
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);
 
 			} finally {
 
-				if (resultLabel.getText().isBlank()) {
+				if (resultLabel.getText().isBlank()) { //se la label e' vuota allora non sono stati riscontrati errori in fase di inserimento dei dati
 					resultLabel.setText("Registrazione andata a buon fine");
 					resultLabel.setForeground(Color.blue);
 					resultLabel.setVisible(true);
 				}
 			}
-
-			// ALTRIMENTI ESEGUIRE:
-			/*
-			 * resultLabel.setText("Id vaccinazione già presente o codice fiscale invalido"
-			 * ); resultLabel.setForeground(Color.red); resultLabel.setVisible(true);
-			 */
 		}
 	}
 
@@ -265,13 +256,11 @@ public class Register_Frame implements ActionListener, MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 

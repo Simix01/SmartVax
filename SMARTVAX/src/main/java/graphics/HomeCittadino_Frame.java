@@ -247,35 +247,33 @@ public class HomeCittadino_Frame implements ActionListener, MouseListener {
 		}
 	}
 
-	// AGGIUNGO GLI ACTION EVENTS AI BUTTON
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
 		boolean login = false;
-		if (e.getSource() == registerButton) {
+		if (e.getSource() == registerButton) { //premuto button per registrazione nuovo utente
 			frmSmartvaxHome.dispose();
 			Register_Frame myFrame = new Register_Frame();
 		}
 
-		if (e.getSource() == freeArea) {
+		if (e.getSource() == freeArea) { //premuto button per ricercare centri
 			frmSmartvaxHome.dispose();
-			FreeArea_Frame myFrame = new FreeArea_Frame(false);
+			FreeArea_Frame myFrame = new FreeArea_Frame(false); //passaggio di booleano false perce' non e' avvenuto l'acccesso
 		}
 
-		if (e.getSource() == loginButton) {
-			// FARE QUERY PER CONTROLLARE CHE L'UTENTE SI SIA LOGGATO CON I DATI CORRETTI
-
+		if (e.getSource() == loginButton) { //premuto button per fare il login dopo aver inserito i dati
+			
 			try {
-				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino();
-				login = c.Login(userField.getText(), String.valueOf(passwordField.getPassword()));
-			} catch (IOException | SQLException e1) {
+				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino(); //istanzio oggetto centrovaccinaleservicestubcittadino
+				login = c.Login(userField.getText(), String.valueOf(passwordField.getPassword())); //salvo in login il risultato del metodo Login
+			} catch (IOException | SQLException e1) { //eccezioni sollevate
 				e1.printStackTrace();
 			}
 
-			if (login) {
+			if (login) { //se il login e' andato a buon fine allora si passa al frame successivo
 				frmSmartvaxHome.dispose();
 				LoggedIn_Frame myFrame = new LoggedIn_Frame();
-			} else {
+			} else { //altrimenti il label mostrera' il messaggio di errore
 				resultLabel.setText("I dati di accesso sono errati");
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);

@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class ConnectDB {
 
-	private String database_connection_string = "jdbc:postgresql://localhost:5432/smartvax";
+	private String database_connection_string = "jdbc:postgresql://localhost:5432/smartvax"; //database smartvax selezionato
 
 	private String database_user_name;
 
@@ -17,18 +17,16 @@ public class ConnectDB {
 
 		try {
 
-			conn = DriverManager.getConnection(database_connection_string, database_user_name, database_user_password);
-			
-			System.out.println("Ciao");
+			conn = DriverManager.getConnection(database_connection_string, database_user_name, database_user_password); //istanzia la connessione al database
 
 		} catch (SQLException e)
 
 		{
 
-			System.exit(0);
+			System.exit(0); //se le credenziali sono errate il processo viene killato con il metodo exit
 		}
 
-		return conn;
+		return conn; //ritorna la connessione istanziata
 
 	}
 

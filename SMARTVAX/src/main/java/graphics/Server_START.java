@@ -35,7 +35,7 @@ public class Server_START implements ActionListener {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Server_START window = new Server_START();
+					Server_START window = new Server_START(); //parte da qui
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -120,15 +120,13 @@ public class Server_START implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// AGGIUNGERE ACTION QUANDO VIENE PREMUTO UN PULSANTE
-		// SE LE CREDENZIALI SONO CORRETTE ALLORA ESEGUE:
 
 		resultLabel.setText("");
 		Server server = null;
 
 		try {
 
-			server = new Server(usernameField.getText(), String.valueOf(passwordField.getPassword()));
+			server = new Server(usernameField.getText(), String.valueOf(passwordField.getPassword())); //avvio del server con le credenziali inserite
 
 		} catch (IOException | SQLException e1) {
 
@@ -137,7 +135,6 @@ public class Server_START implements ActionListener {
 			try {
 				server.Start();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}

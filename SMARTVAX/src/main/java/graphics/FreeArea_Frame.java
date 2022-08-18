@@ -44,16 +44,6 @@ public class FreeArea_Frame implements ActionListener, MouseListener {
 	private boolean access;
 
 	/**
-	 * Launch the application.
-	 */
-	/*
-	 * public static void main(String[] args) { EventQueue.invokeLater(new
-	 * Runnable() { public void run() { try { FreeArea_Frame window = new
-	 * FreeArea_Frame(); window.frame.setVisible(true); } catch (Exception e) {
-	 * e.printStackTrace(); } } }); }
-	 */
-
-	/**
 	 * Create the application.
 	 */
 	public FreeArea_Frame(boolean access) {
@@ -78,6 +68,7 @@ public class FreeArea_Frame implements ActionListener, MouseListener {
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setFont(new Font("Tahoma", Font.BOLD, 12));
 
+		//all'interno della JTextArea saranno visualizzati i dati relativi al centro vaccinale cercato
 		visualizzaArea = new JTextArea();
 		visualizzaArea.setEditable(false);
 		visualizzaArea.setBorder(new RoundedBorder(3));
@@ -243,19 +234,20 @@ public class FreeArea_Frame implements ActionListener, MouseListener {
 	public void actionPerformed(ActionEvent e) {
 
 		LinkedList<String[]> centriLinkedList;
-		CentroVaccinaleServiceStubCittadino c;
+		CentroVaccinaleServiceStubCittadino c; //oggetto centrovaccinaleservicestubcittadino dichiarato 
 		LinkedList<String> nomiCentri = new LinkedList<String>();
+		
 		// button premuto per cercare centro tramite nome
 		if (e.getSource() == search1Button) {
-			// visualizzaArea.setText("Ciao");
+			
 			try {
 				visualizzaArea.setText("");
 				visualizzaArea.setForeground(Color.BLACK);
-				c = new CentroVaccinaleServiceStubCittadino();
-				visualizzaArea
-						.setText(c.VisualizzaCentro(false, null, nomeCentroField.getText(), null, null, -1, null));
+				c = new CentroVaccinaleServiceStubCittadino(); //istanziato oggetto centrovaccinaleservicestubcittadino
+				visualizzaArea //chiamo metodo per visualizzare dati del centro e lo inserisco direttamente come testo della JTextArea
+						.setText(c.VisualizzaCentro(false, null, nomeCentroField.getText(), null, null, -1, null)); 
 			} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti
-					| CittadinoNonVaccinatoNelCentro e1) {
+					| CittadinoNonVaccinatoNelCentro e1) { //varie eccezioni sollevate
 				visualizzaArea.setText(e1.getMessage());
 				visualizzaArea.setForeground(Color.RED);
 				e1.printStackTrace();
@@ -263,26 +255,20 @@ public class FreeArea_Frame implements ActionListener, MouseListener {
 
 		}
 
-		// button premuto per cercare centri da aggiungere dinamicamente al menù a
-		// tendina
+		// button premuto per cercare centri da aggiungere dinamicamente al menù a tendina
 		if (e.getSource() == ricercaButton) {
 
 			try {
-				c = new CentroVaccinaleServiceStubCittadino();
+				c = new CentroVaccinaleServiceStubCittadino(); //istanziato oggetto centrovaccinaleservicestubcittadino
 				centriLinkedList = c.RicercaCentroComuneTipologia(comuneField.getText(),
-						tipologiaBox.getSelectedItem().toString());
-
-				// String[] prova = centriLinkedList.get(0);
-
-				// visualizzaArea.setText(prova[0]);
+						tipologiaBox.getSelectedItem().toString()); //il metodo per cercare un centro tramite comune e tipologia ritorna una linkedlist
 
 				for (String[] s : centriLinkedList)
-					nomiCentri.add(s[0]);
+					nomiCentri.add(s[0]); //scorro la lista e inserisco i nomi dei centri trovati nella linkedlist nomeCentri
 
-				centriBox.setModel(new DefaultComboBoxModel(nomiCentri.toArray(new String[0])));
+				centriBox.setModel(new DefaultComboBoxModel(nomiCentri.toArray(new String[0]))); //inserisco nella JComboBox i nomi del vettore convertito
 
 			} catch (IOException | SQLException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -294,11 +280,11 @@ public class FreeArea_Frame implements ActionListener, MouseListener {
 			try {
 				visualizzaArea.setText("");
 				visualizzaArea.setForeground(Color.BLACK);
-				c = new CentroVaccinaleServiceStubCittadino();
-				visualizzaArea.setText(
+				c = new CentroVaccinaleServiceStubCittadino(); //istanziato oggetto centrovaccinaleservicestubcittadino
+				visualizzaArea.setText( //chiamo metodo per cercare dati del centro selezionato nella JComboBox
 						c.VisualizzaCentro(false, null, centriBox.getSelectedItem().toString(), null, null, -1, null));
 			} catch (IOException | SQLException | CentroVaccinaleNonEsistente | CentriVaccinaliNonEsistenti
-					| CittadinoNonVaccinatoNelCentro e1) {
+					| CittadinoNonVaccinatoNelCentro e1) { //varie eccezioni sollevate
 				visualizzaArea.setText(e1.getMessage());
 				visualizzaArea.setForeground(Color.RED);
 				e1.printStackTrace();
