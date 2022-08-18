@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.sql.Date;
 import java.sql.SQLException;
 
+import common.CapErrato;
 import common.CentriVaccinaliNonEsistenti;
 import common.CentroVaccinaleGiaRegistrato;
 import common.CentroVaccinaleNonEsistente;
@@ -14,6 +15,7 @@ import common.CentroVaccinaleService;
 import common.CittadinoGiaRegistrato;
 import common.CittadinoNonVaccinato;
 import common.CittadinoNonVaccinatoNelCentro;
+import common.CodiceFiscaleErrato;
 
 public class CentroVaccinaleServiceSkel extends Thread {
 
@@ -44,7 +46,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 					break;
 				}
 			} catch (ClassNotFoundException | IOException | CentroVaccinaleNonEsistente | SQLException
-					| CittadinoNonVaccinatoNelCentro e) {
+					| CittadinoNonVaccinatoNelCentro | CapErrato | CodiceFiscaleErrato e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 				return;
@@ -52,7 +54,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 		}
 	}
 
-	private void MenuOperatore() throws CentroVaccinaleNonEsistente {
+	private void MenuOperatore() throws CentroVaccinaleNonEsistente, CapErrato, CodiceFiscaleErrato {
 		try {
 
 			int scelta = interpretaOperatore((String) in.readObject());
@@ -64,7 +66,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 							(String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (int) in.readObject(), (String) in.readObject());
 					out.writeObject("OK");
-				} catch (CentroVaccinaleGiaRegistrato e) {
+				} catch (CentroVaccinaleGiaRegistrato | CapErrato e) {
 					out.writeObject(e);
 				}
 				break;
@@ -73,10 +75,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 					g.registraVaccinato((String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
 							(String) in.readObject(), (String) in.readObject(), (Date) in.readObject());
 					out.writeObject("OK");
-				} catch (CentroVaccinaleNonEsistente e) {
-					out.writeObject(e);
-					e.printStackTrace();
-				} catch (SQLException e) {
+				} catch (CentroVaccinaleNonEsistente | CodiceFiscaleErrato | SQLException e) {
 					out.writeObject(e);
 					e.printStackTrace();
 				}
@@ -121,7 +120,7 @@ public class CentroVaccinaleServiceSkel extends Thread {
 							(String) in.readObject(), (String) in.readObject(), (String) in.readObject(),
 							(Integer) in.readObject());
 					out.writeObject("OK");
-				} catch (IOException | CittadinoGiaRegistrato | SQLException | CittadinoNonVaccinato e) {
+				} catch (IOException | CittadinoGiaRegistrato | SQLException | CittadinoNonVaccinato | CodiceFiscaleErrato e) {
 					out.writeObject(e);
 				}
 				break;

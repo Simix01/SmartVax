@@ -17,6 +17,7 @@ import common.CentroVaccinaleServiceCittadino;
 import common.CittadinoGiaRegistrato;
 import common.CittadinoNonVaccinato;
 import common.CittadinoNonVaccinatoNelCentro;
+import common.CodiceFiscaleErrato;
 
 public class CentroVaccinaleServiceStubCittadino implements CentroVaccinaleServiceCittadino {
 
@@ -109,7 +110,8 @@ public class CentroVaccinaleServiceStubCittadino implements CentroVaccinaleServi
 
 	@Override
 	public void registraCittadino(String nome, String cognome, String email, String username, String password,
-			String cf, int id) throws IOException, CittadinoGiaRegistrato, SQLException, CittadinoNonVaccinato {
+			String cf, int id)
+			throws IOException, CittadinoGiaRegistrato, SQLException, CittadinoNonVaccinato, CodiceFiscaleErrato {
 		Object tmp;
 
 		out.writeObject("CITTADINO");
@@ -136,8 +138,12 @@ public class CentroVaccinaleServiceStubCittadino implements CentroVaccinaleServi
 		} else if (tmp instanceof CittadinoGiaRegistrato) {
 			throw (CittadinoGiaRegistrato) tmp;
 		} else if (tmp instanceof CittadinoNonVaccinato) {
-			throw new CittadinoNonVaccinato();
-		} else if (tmp instanceof String && ((String) tmp).equals("OK")) {
+			throw (CittadinoNonVaccinato) tmp;
+		} else if (tmp instanceof CodiceFiscaleErrato) {
+			throw (CodiceFiscaleErrato) tmp;
+		} else if (tmp instanceof String && ((String) tmp).equals("OK"))
+
+		{
 			return;
 		} else {
 			throw new IOException();

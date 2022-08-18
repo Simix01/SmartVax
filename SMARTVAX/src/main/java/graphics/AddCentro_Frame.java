@@ -20,6 +20,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import centrivaccinaliClient.CentroVaccinaleServiceStubOperatore;
+import common.CapErrato;
 import common.CentroVaccinaleGiaRegistrato;
 
 import java.awt.Font;
@@ -327,14 +328,15 @@ public class AddCentro_Frame implements ActionListener, MouseListener, FocusList
 						siglaProvField.getText(), Integer.parseInt(capField.getText()),
 						tipologiaBox.getSelectedItem().toString());
 
-			} catch (IOException e1) {
+			} catch (IOException | NumberFormatException e1) {
 				resultLabel.setText("Errore nell'inserimento dei dati");
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);
-			} catch (CentroVaccinaleGiaRegistrato e1) {
+			} catch (CentroVaccinaleGiaRegistrato | CapErrato e1) {
 				resultLabel.setText(e1.getMessage());
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);
+
 			} finally {
 
 				if (resultLabel.getText().isBlank()) {

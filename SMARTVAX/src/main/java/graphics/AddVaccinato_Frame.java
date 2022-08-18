@@ -23,6 +23,7 @@ import com.toedter.calendar.JDateChooser;
 
 import centrivaccinaliClient.CentroVaccinaleServiceStubOperatore;
 import common.CentroVaccinaleNonEsistente;
+import common.CodiceFiscaleErrato;
 
 import javax.swing.JButton;
 import javax.swing.DefaultComboBoxModel;
@@ -263,7 +264,7 @@ public class AddVaccinato_Frame implements ActionListener, MouseListener {
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);
 				e1.printStackTrace();
-			} catch (CentroVaccinaleNonEsistente e1) {
+			} catch (CentroVaccinaleNonEsistente | CodiceFiscaleErrato e1) {
 				resultLabel.setText(e1.getMessage());
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);

@@ -3,6 +3,7 @@ package common;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.CodingErrorAction;
 import java.sql.Connection;
 import java.sql.Date;
 import java.util.LinkedList;
@@ -17,7 +18,7 @@ import centrivaccinaliServer.Vaccinato;
 public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	private Connection conn;
-	private static String CF="1234567890123456";
+	private static String CF = "1234567890123456";
 
 	@Override
 	public synchronized boolean Login(String id, String pw) throws SQLException {
@@ -44,8 +45,8 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		String[] vettore;
 		LinkedList<String[]> infoCentri = new LinkedList<String[]>();
 		ResultSet rs = null;
-		String query = "SELECT * FROM centrivaccinali where comune = '" + comune + "' AND tipologia = '"
-				+ cercatoTipo + "'";
+		String query = "SELECT * FROM centrivaccinali where comune = '" + comune + "' AND tipologia = '" + cercatoTipo
+				+ "'";
 
 		rs = stmt.executeQuery(query);
 
@@ -74,8 +75,8 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	@Override
 	public synchronized String VisualizzaCentro(boolean access, String sceltaEvento, String cercato, String comune,
-			String cercatoTipo, int gravita, String nota)
-			throws IOException, SQLException, CentroVaccinaleNonEsistente, CentriVaccinaliNonEsistenti, CittadinoNonVaccinatoNelCentro {
+			String cercatoTipo, int gravita, String nota) throws IOException, SQLException, CentroVaccinaleNonEsistente,
+			CentriVaccinaliNonEsistenti, CittadinoNonVaccinatoNelCentro {
 		String[] trovato = null;
 		String info = "";
 
@@ -109,17 +110,23 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	@Override
 	public synchronized void registraCentroVaccinale(String nome, String tipoVia, String nomeVia, String numCiv,
-			String comune, String sigProv, int cap, String tipologia) throws IOException, CentroVaccinaleGiaRegistrato {
+			String comune, String sigProv, int cap, String tipologia)
+			throws IOException, CentroVaccinaleGiaRegistrato, CapErrato {
 
 		try {
 
 			if (!findCentroVac(nome)) {
-				String queryInsert = "insert into centrivaccinali (nomecentro,tipoluogo,nomeluogo,numcivico,comune,siglaprovincia,cap,tipologia) "
-						+ "values ('" + nome + "','" + tipoVia + "','" + nomeVia + "','" + numCiv + "','" + comune
-						+ "','" + sigProv + "'," + cap + ",'" + tipologia + "')";
 
-				PreparedStatement preparedStmt = conn.prepareStatement(queryInsert);
-				preparedStmt.executeUpdate();
+				if (String.valueOf(cap).length() == 5) {
+
+					String queryInsert = "insert into centrivaccinali (nomecentro,tipoluogo,nomeluogo,numcivico,comune,siglaprovincia,cap,tipologia) "
+							+ "values ('" + nome + "','" + tipoVia + "','" + nomeVia + "','" + numCiv + "','" + comune
+							+ "','" + sigProv + "'," + cap + ",'" + tipologia + "')";
+
+					PreparedStatement preparedStmt = conn.prepareStatement(queryInsert);
+					preparedStmt.executeUpdate();
+				} else
+					throw new CapErrato();
 
 			} else
 				throw new CentroVaccinaleGiaRegistrato();
@@ -132,13 +139,17 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	@Override
 	public synchronized void registraVaccinato(String nome, String cognome, String nomeCentro, String codFiscale,
-			String vaccino, Date date) throws IOException, SQLException, CentroVaccinaleNonEsistente {
+			String vaccino, Date date)
+			throws IOException, SQLException, CentroVaccinaleNonEsistente, CodiceFiscaleErrato {
 
 		Statement preparedStmt = conn.createStatement();
 		new BufferedReader(new InputStreamReader(System.in));
 
 		if (!findCentroVac(nomeCentro))
 			throw new CentroVaccinaleNonEsistente();
+
+		if (codFiscale.length() != 16)
+			throw new CodiceFiscaleErrato();
 
 		Vaccinato vaccinato = new Vaccinato(nomeCentro, nome, cognome, codFiscale, vaccino);
 
@@ -182,22 +193,26 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	@Override
 	public synchronized void registraCittadino(String nome, String cognome, String email, String username,
 			String password, String cf, int id)
-			throws IOException, CittadinoGiaRegistrato, SQLException, CittadinoNonVaccinato {
+			throws IOException, CittadinoGiaRegistrato, SQLException, CittadinoNonVaccinato, CodiceFiscaleErrato {
 		try {
 
-			if (controlloId(id, cf)) {
+			if (cf.length() == 16) {
 
-				String queryInserimento = "INSERT INTO cittadiniregistrati(nome,cognome,codfiscale,mail,username,password) "
-						+ "VALUES ('" + nome + "','" + cognome + "','" + cf + "','" + email + "','" + username + "','"
-						+ password + "')";
+				if (controlloId(id, cf)) {
 
-				PreparedStatement stmt = conn.prepareStatement(queryInserimento);
+					String queryInserimento = "INSERT INTO cittadiniregistrati(nome,cognome,codfiscale,mail,username,password) "
+							+ "VALUES ('" + nome + "','" + cognome + "','" + cf + "','" + email + "','" + username
+							+ "','" + password + "')";
 
-				stmt.executeUpdate();
+					PreparedStatement stmt = conn.prepareStatement(queryInserimento);
 
-				System.out.println("Registrazione avvenuta con successo!");
+					stmt.executeUpdate();
+
+					System.out.println("Registrazione avvenuta con successo!");
+				} else
+					throw new CittadinoNonVaccinato();
 			} else
-				throw new CittadinoNonVaccinato();
+				throw new CodiceFiscaleErrato();
 		} catch (SQLException e) {
 			System.err.print("Username/Email già usato oppure " + new CittadinoGiaRegistrato());
 		}
@@ -309,8 +324,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 			stmt.executeUpdate();
 
-		}
-		else {
+		} else {
 			throw new CittadinoNonVaccinatoNelCentro();
 		}
 	}

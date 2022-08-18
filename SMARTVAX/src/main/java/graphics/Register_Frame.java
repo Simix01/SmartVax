@@ -21,6 +21,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import cittadini.CentroVaccinaleServiceStubCittadino;
 import common.CittadinoGiaRegistrato;
 import common.CittadinoNonVaccinato;
+import common.CodiceFiscaleErrato;
 
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
@@ -227,27 +228,12 @@ public class Register_Frame implements ActionListener, MouseListener {
 						usernameField.getText(), String.valueOf(passwordField.getPassword()), codFiscaleField.getText(),
 						Integer.parseInt(idVaccinazioneField.getText()));
 
-			} catch (IOException e1) {
+			} catch (IOException | NumberFormatException | SQLException e1) {
 				resultLabel.setText("Errore nell'inserimento dei dati");
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);
 
-			} catch (NumberFormatException e1) {
-				resultLabel.setText("Errore nell'inserimento dei dati");
-				resultLabel.setForeground(Color.red);
-				resultLabel.setVisible(true);
-
-			} catch (CittadinoGiaRegistrato e1) {
-				resultLabel.setText(e1.getMessage());
-				resultLabel.setForeground(Color.red);
-				resultLabel.setVisible(true);
-
-			} catch (SQLException e1) {
-				resultLabel.setText("Errore nell'inserimento dei dati");
-				resultLabel.setForeground(Color.red);
-				resultLabel.setVisible(true);
-
-			} catch (CittadinoNonVaccinato e1) {
+			} catch (CittadinoGiaRegistrato | CodiceFiscaleErrato | CittadinoNonVaccinato e1) {
 				resultLabel.setText(e1.getMessage());
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);

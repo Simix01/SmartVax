@@ -11,9 +11,11 @@ import java.sql.Date;
 import java.sql.SQLException;
 
 import centrivaccinaliServer.Server;
+import common.CapErrato;
 import common.CentroVaccinaleGiaRegistrato;
 import common.CentroVaccinaleNonEsistente;
 import common.CentroVaccinaleServiceOperatore;
+import common.CodiceFiscaleErrato;
 
 public class CentroVaccinaleServiceStubOperatore implements CentroVaccinaleServiceOperatore {
 
@@ -30,7 +32,7 @@ public class CentroVaccinaleServiceStubOperatore implements CentroVaccinaleServi
 
 	@Override
 	public void registraCentroVaccinale(String nome, String tipoVia, String nomeVia, String numCiv, String comune,
-			String sigProv, int cap, String tipologia) throws IOException, CentroVaccinaleGiaRegistrato {
+			String sigProv, int cap, String tipologia) throws IOException, CentroVaccinaleGiaRegistrato, CapErrato {
 		Object tmp;
 		out.writeObject("OPERATORE");
 		out.writeObject("REGCENTRO");
@@ -53,6 +55,8 @@ public class CentroVaccinaleServiceStubOperatore implements CentroVaccinaleServi
 			throw (CentroVaccinaleGiaRegistrato) tmp;
 		} else if (tmp instanceof IOException) {
 			throw (IOException) tmp;
+		} else if (tmp instanceof CapErrato) {
+			throw (CapErrato) tmp;
 		} else if (tmp instanceof String && ((String) tmp).equals("OK")) {
 			return;
 		} else {
@@ -62,7 +66,7 @@ public class CentroVaccinaleServiceStubOperatore implements CentroVaccinaleServi
 
 	@Override
 	public void registraVaccinato(String nome, String cognome, String nomeCentro, String codFiscale, String vaccino,
-			Date date) throws IOException, SQLException, CentroVaccinaleNonEsistente {
+			Date date) throws IOException, SQLException, CentroVaccinaleNonEsistente, CodiceFiscaleErrato {
 		Object tmp;
 		out.writeObject("OPERATORE");
 		out.writeObject("REGVACC");
@@ -82,6 +86,8 @@ public class CentroVaccinaleServiceStubOperatore implements CentroVaccinaleServi
 			throw (CentroVaccinaleNonEsistente) tmp;
 		else if (tmp instanceof SQLException) {
 			throw (SQLException) tmp;
+		} else if (tmp instanceof CodiceFiscaleErrato) {
+			throw (CodiceFiscaleErrato) tmp;
 		} else if (tmp instanceof IOException) {
 			throw (IOException) tmp;
 		} else if (tmp instanceof String && ((String) tmp).equals("OK")) {
