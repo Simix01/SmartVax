@@ -98,7 +98,7 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 				inserisciEventiAvversi(trovato[0], sceltaEvento, gravita, nota);
 
 			else
-				info += StatisticheEventiAvversi(); //ritorna valori + statistiche ricavate dalla funzione
+				info += StatisticheEventiAvversi(cercato); //ritorna valori + statistiche ricavate dalla funzione
 
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
@@ -338,10 +338,10 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	}
 
 	//funzione per calcolare e fornire dati statistici relativi agli eventi avversi registrati in un dato centro vaccinale
-	private String StatisticheEventiAvversi() throws SQLException {
+	private String StatisticheEventiAvversi(String nomeCentro) throws SQLException {
 		Statement stmt = conn.createStatement();
 
-		String queryStatisticaString = "select avg(valoregravita)as mediagravita, tipoevento, count(*) as numcases  from eventiavversi group by tipoevento";
+		String queryStatisticaString = "select avg(valoregravita)as mediagravita, tipoevento, count(*) as numcases  from eventiavversi where nomecentro = '"+nomeCentro+"'  group by tipoevento";
 
 		ResultSet rs = stmt.executeQuery(queryStatisticaString);
 

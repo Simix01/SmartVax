@@ -251,29 +251,34 @@ public class HomeCittadino_Frame implements ActionListener, MouseListener {
 	public void actionPerformed(ActionEvent e) {
 
 		boolean login = false;
-		if (e.getSource() == registerButton) { //premuto button per registrazione nuovo utente
+		if (e.getSource() == registerButton) { // premuto button per registrazione nuovo utente
 			frmSmartvaxHome.dispose();
 			Register_Frame myFrame = new Register_Frame();
 		}
 
-		if (e.getSource() == freeArea) { //premuto button per ricercare centri
+		if (e.getSource() == freeArea) { // premuto button per ricercare centri
 			frmSmartvaxHome.dispose();
-			FreeArea_Frame myFrame = new FreeArea_Frame(false); //passaggio di booleano false perce' non e' avvenuto l'acccesso
+			FreeArea_Frame myFrame = new FreeArea_Frame(false); // passaggio di booleano false perce' non e' avvenuto
+																// l'acccesso
 		}
 
-		if (e.getSource() == loginButton) { //premuto button per fare il login dopo aver inserito i dati
-			
+		if (e.getSource() == loginButton) { // premuto button per fare il login dopo aver inserito i dati
+
+			// LoggedIn_Frame myFrame = new LoggedIn_Frame();
 			try {
-				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino(); //istanzio oggetto centrovaccinaleservicestubcittadino
-				login = c.Login(userField.getText(), String.valueOf(passwordField.getPassword())); //salvo in login il risultato del metodo Login
-			} catch (IOException | SQLException e1) { //eccezioni sollevate
+				CentroVaccinaleServiceStubCittadino c = new CentroVaccinaleServiceStubCittadino(); // istanzio oggetto
+																									// centrovaccinaleservicestubcittadino
+				login = c.Login(userField.getText(), String.valueOf(passwordField.getPassword())); // salvo in login il
+																									// risultato del
+																									// metodo Login
+			} catch (IOException | SQLException e1) { // eccezioni sollevate
 				e1.printStackTrace();
 			}
 
-			if (login) { //se il login e' andato a buon fine allora si passa al frame successivo
+			if (login) { // se il login e' andato a buon fine allora si passa al frame successivo
 				frmSmartvaxHome.dispose();
 				LoggedIn_Frame myFrame = new LoggedIn_Frame();
-			} else { //altrimenti il label mostrera' il messaggio di errore
+			} else { // altrimenti il label mostrera' il messaggio di errore
 				resultLabel.setText("I dati di accesso sono errati");
 				resultLabel.setForeground(Color.red);
 				resultLabel.setVisible(true);
