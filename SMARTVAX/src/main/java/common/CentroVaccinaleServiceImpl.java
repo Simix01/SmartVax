@@ -15,13 +15,44 @@ import java.sql.Statement;
 import java.text.DecimalFormat;
 import centrivaccinaliServer.Vaccinato;
 
+/**Classe che fornisce l'implementazione dei vari metodi utili al cittadino e all'operatore.
+ * L'operatore può registrare un nuovo centro vaccinale oppure un nuovo vaccinato.
+ * Il cittadino può registrarsi, effettuare il login, ricercare un centro vaccinale per nome o comune e tipologia
+ * e vedere le statistiche dei relativi eventi avversi.
+ * 
+ * <p>
+ * <code>
+ * conn Variabile globale relativa ad un oggetto di tipo Connection 
+ * utile a stabilire la connessione con il database
+ * CF Variabile globale che permette di salvare il codice fiscale del cittadino
+ * </code>
+ * 
+ * @author Mirko Pomata
+ * @author Joshua Perez
+ * @author Simone Bernaschina
+ * @author Elena Perkoska
+ */
 public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	private Connection conn; //connessione 
 	private static String CF;
 
-	//viene effettuata la query per vedere se i dati inseriti dall'utente che richiede di accedere siano corretti
 	@Override
+	//viene effettuata la query per vedere se i dati inseriti dall'utente che richiede di accedere siano corretti
+	/**
+	 * Metodo che permette di effettuare il login controllando se esiste nel db una corrispondenza con gli username e
+	 * password inseriti dall'utente. In caso positivo viene salvato il cofice fiscale.
+	 * 
+	 * @param id Variabile che contiene l'username
+	 * @param pw Variabile che contiene la password
+	 * @param queryVerificaLogin Stringa in cui è contenuta la query per verificare che il cittadino sia registrato.
+	 * @param stmt Oggetto di tipo Statement
+	 * @param rs Oggetto che contiene il result set con il risultato della query
+	 * @return Viene ritornato true se il cittadino è gia registrato, altrimenti false
+	 * @throws SQLException Nel caso in cui il database restituisca un errore
+	 * 
+	 */
+	
 	public synchronized boolean Login(String id, String pw) throws SQLException {
 		String queryVerificaLogin = "SELECT codfiscale" + " FROM cittadiniregistrati" + " WHERE username='" + id
 				+ "' AND password= '" + pw + "'"; //stringa che contiene la query
@@ -38,8 +69,25 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 			return false;
 	}
 
-	//funzione per cercare centro tramite comune e tipologia
 	@Override
+	//funzione per cercare centro tramite comune e tipologia
+	/**
+	 * Metodo che permette di ricercare un centro vaccinale tramite il comune e la tipologia.
+	 * Se viene trovata una corrispondenza viene tornata una linked list contenente i vari centri vaccinali.
+	 * 
+	 * @param comune Variabile che contiene il comune del centro da ricercare
+	 * @param cercatoTipo Variabile che contiene il tipo di centro da ricercare
+	 * @param stmt Oggetto di tipo Statement
+	 * @param vettore Array di tipo stringa in cui vengono salvati i valori relativi al comune e alla tipologia
+	 * @param infoCentri Lista che contiene i centri vaccinali
+	 * @param rs Oggetto che contiene il result set con il risultato della query
+	 * @param query Stringa che contiene la query per la ricerca dei centri nel database
+	 * @return Viene ritornata la lista dei centri in caso di ricerca andata a buon fine, altrimenti null se 
+	 * non sono stati trovati centri vaccinali
+	 * @throws SQLException Nel caso in cui il database restituisca un errore
+	 *
+	 */
+	
 	public synchronized LinkedList<String[]> RicercaCentroComuneTipologia(String comune, String cercatoTipo)
 			throws SQLException {
 		Statement stmt = conn.createStatement();
@@ -74,8 +122,30 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 			return null;
 	}
 
-	//funzione per visualizzare i dati del centro vaccinale
 	@Override
+	//funzione per visualizzare i dati del centro vaccinale
+	/**
+	 * Metodo utile a cercare un centro vaccinale e a visualizzare le statistiche relative agli eventi avversi 
+	 * dei vaccinati in tale centro. Inolte se l'utente ha effettuato il login ha la possibilità di inserire
+	 * un evento avverso. 
+	 * 
+	 * @param access Variabile che abilita l'inserimento degli eventi avversi in base al login
+	 * @param sceltaEvento Variabile che contiene il tipo di evento avverso
+	 * @param cercato Variabile che contine il nome del centro vaccinale da cercare
+	 * @param comune Variabile che contiene il nome del comune del centro vaccinale
+	 * @param cercatoTipo Variabile che contiene il tipo di centro vaccinale(hub/ospedaliero/aziendale)
+	 * @param gravita Variabile che contiene la gravità dell'evento avverso (da 1 a 5)
+	 * @param nota Variabile che contiene eventuali note opzionali che il vaccinato può inserire
+	 * @param trovato Array utilizzato per salvare le informazioni del centro trovato
+	 * @param info Variabile utilizzata per salavre le informazioni relative al centro vaccinale
+	 * @return Ritorna le informazioni del centro vaccinale con le eventuali statistiche
+	 * @throws IOException Nel caso in cui l'utente non inserisce nessun valore
+	 * @throws SQLException Nel caso in cui il database restituisca un errore
+	 * @throws CentroVaccinaleNonEsistente Nel caso in cui venga cercato un centro vaccinale che non esiste
+	 * @throws CentriVaccinaliNonEsistenti 
+	 * @throws CittadinoNonVaccinatoNelCentro Nel caso in cui il cittadino non sia stato registrato nel centro selezionato
+	 */
+	
 	public synchronized String VisualizzaCentro(boolean access, String sceltaEvento, String cercato, String comune,
 			String cercatoTipo, int gravita, String nota) throws IOException, SQLException, CentroVaccinaleNonEsistente,
 			CentriVaccinaliNonEsistenti, CittadinoNonVaccinatoNelCentro {
@@ -109,8 +179,27 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 		return info;
 	}
 
-	//funzione per registrare centro vaccinale
 	@Override
+	//funzione per registrare centro vaccinale
+	/**
+	 * Metodo utile a registrare un nuovo centro vaccinale. In primo luogo viene verificato che il centro vaccinale
+	 * che si vuole inserire non sia già registrato. Se il controllo va a buon fine si procede con l'inserimento.
+	 * 
+	 * @param nome Variabile che contiene il nome del centro vaccinale
+	 * @param tipoVia Variabile che contiene il tipo di via in cui si trova il centro vaccinale
+	 * @param nomeVia Variabile che contiene il nome della via in cui si trova il centro vaccinale
+	 * @param numCiv Variabile che contiene il numero civico della via in cui si trova il centro vaccinale
+	 * @param comune Variabile che contiene il nome del comune in cui si trova il centro vaccinale
+	 * @param sigprov Variabile che contiene la sigla della provincia in cui si trova il centro vaccinale
+	 * @param cap Variabile che contiene il cap in cui si trova il centro vaccinale
+	 * @param tipologia Variabile che contiene la tipologia del centro vaccinale
+	 * @param queryInsert Variabile che contiene la query necessaria ad inserire il nuovo centro vaccinale del database
+	 * @param preparedStmt Variabile che identifica l'oggetto di tipo PreparedStatement
+	 * @throws IOException Nel caso in cui l'utente non inserisce nessun valore
+	 * @throws CentroVaccinaleGiaRegistrato Nel caso in cui il centro vaccinale sia già registrato
+	 * @throws CapErrato Nel caso in cui il cap inserito sia errato
+	 */
+	
 	public synchronized void registraCentroVaccinale(String nome, String tipoVia, String nomeVia, String numCiv,
 			String comune, String sigProv, int cap, String tipologia)
 			throws IOException, CentroVaccinaleGiaRegistrato, CapErrato {
@@ -138,9 +227,37 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 			e.printStackTrace();
 		}
 	}
-
-	//funzione per registrare centro vaccinale
+	
 	@Override
+	//funzione per registrare un nuovo vaccinato
+	/**
+	 * Metodo che permette di registrare un vaccinato. Vengono effettuati vari controllo: si verifica che il centro vaccinale
+	 * inserito esista, si effettua un controllo sulla lunghezza del codice fiscale, si verifica se la tabella del database
+	 * relativa al centro esista e in caso negativo la si crea. A questo punto viene salvato il vaccinato e registrata la
+	 * correlazione tra id e codice fiscale.
+	 * 
+	 * @param nome Variabile che contiene il nome del vaccinato
+	 * @param cognome Variabile che contiene il cognome del vaccinato
+	 * @param nomeCentro Variabile che contiene il nome del centro vaccinale
+	 * @param codFiscale Variabile che contiene il codice fiscale del vaccinato
+	 * @param vaccino Variabile che contiene il vaccino con il quale è stato effettuata la vaccinazione
+	 * @param date Variabile che contiene la data in cui è stata effettuata la vaccinazione
+	 * @param preparedStmt Oggetto di tipo PreparedStatement
+	 * @param vaccinato Variabile che identifica un oggetto di tipo Vaccinato
+	 * @param queryString Variabile che contiene la query per verificare che la tabella relativa al centro vaccinale esista
+	 * @param stmt Oggetto di tipo Statement
+	 * @param rs Oggetto che contiene il result set con il risultato della query
+	 * @param exist Variabile che contiene true in caso la tabella relativa al centro vaccinale esista
+	 * @param queryCrea Variabile che contiene la query utile a creare la tabella relativa al centro vaccinale
+	 * @param queryAggiungiVaccinato Variabile che contiene la query utile ad aggiungere un vaccinato nel database
+	 * @param querySiVaccinaString Variabile che contiene la query utile a collegare l'id della vaccinazione al 
+	 * codice fiscale nel database
+	 * @throws IOException Nel caso in cui l'utente non inserisce nessun valore
+	 * @throws SQLException Nel caso in cui il database restituisca un errore
+	 * @throws CentroVaccinaleNonEsistente Nel caso in cui venga cercato un centro vaccinale che non esiste
+	 * @throws CodiceFiscaleErrato Nel caso in cui il codice fiscale inserito sia errato
+	 */
+	
 	public synchronized void registraVaccinato(String nome, String cognome, String nomeCentro, String codFiscale,
 			String vaccino, Date date)
 			throws IOException, SQLException, CentroVaccinaleNonEsistente, CodiceFiscaleErrato {
@@ -192,8 +309,29 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 
 	}
 
-	//funzione per registrare un cittadino
 	@Override
+	//funzione per registrare un cittadino
+	/**
+	 * Metodo che permette al cittadino di registrarsi. Viene controllato in primo luogo la correttezza del codice fiscale, viene
+	 * controllata la corrispondenza tra codice fiscale e id vaccinazione. Infine si procede alla registrazione del cittadino.
+	 * 
+	 * @param nome Variabile che contiene il nome del cittadino
+	 * @param cognome Variabile che contiene il cognome del cittadino
+	 * @param email Variabile che contiene l'email del cittadino
+	 * @param username Variabile che contiene l'username che il cittadino vuole inserire
+	 * @param password Variabile che contiene la password che il cittadino vuole inserire
+	 * @param cf Variabile che contiene il codice fiscale del cittadino
+	 * @param id Variabile che contiene l'id vaccinazione del cittadino
+	 * @param queryInserimento Variabile che contiene la query che permette di registrare il cittadino nel database
+	 * @param stmt Oggetto di tipo Statement
+	 * @throws IOException Nel caso in cui l'utente non inserisce nessun valore
+	 * @throws CittadinoGiaregistrato Nel caso in cui il cittadino sia già registrato
+	 * @throws SLQException Nel caso in cui il database restituisca un errore
+	 * @throws CittadinoNonVaccinato Nel caso in cui il cittadino non sia ancora vaccinato
+	 * @throws CodiceFiscaleErrato Nel caso in cui il codice fiscale sia errato
+	 * @throws UserEmailGiausato Nel caso in cui username o email siano già state utilizzate
+	 */
+	
 	public synchronized void registraCittadino(String nome, String cognome, String email, String username,
 			String password, String cf, int id)
 			throws IOException, CittadinoGiaRegistrato, SQLException, CittadinoNonVaccinato, CodiceFiscaleErrato, UserEmailGiaUsato {
@@ -220,6 +358,11 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 			throw new UserEmailGiaUsato(); 
 		}
 	}
+	
+	/**
+	 * Metodo che costruisce l'oggetto CentroVaccinaleServiceImpl fornendo dati della connessione
+	 * @param conn Oggetto di tipo Connection per la connessione
+	 */
 
 	public CentroVaccinaleServiceImpl(Connection conn) { //costruisce oggetto centrovaccinaleserviceimpl fornendo dati della connessione
 
@@ -227,6 +370,16 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	}
 
 	//funzione per controllare che l'id inserito dall'utente in fase di registrazione corrisponda all'id assegnato in fase di vaccinazione
+	/**
+	 * Metodo utile a controllare che l'id inserito corrisponda a quello assegnato durante la vaccinazione
+	 * @param id Variabile che contiene l'id della vaccinazione
+	 * @param cf Variabile che contiene il codice fiscale del vaccinato
+	 * @param queryControlloId Variabile che contiene la query utile a controllare la corrispondenza sul database
+	 * @param stmt Oggetto di tipo Statement
+	 * @param rs Oggetto che contiene il result set con il risultato della query
+	 * @return Viene ritornato true se la cottispondenza è verificata, altrimenti viene ritornato false
+	 * @throws SQLException Nel caso in cui il database restituisca un errore
+	 */
 	private boolean controlloId(int id, String cf) throws SQLException {
 
 		String queryControlloId = "select idvaccinazione" + " from vaccinazioni " + " where codfiscale='" + cf + "'";
@@ -246,6 +399,15 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	}
 
 	//funzione per verificare che il centro vaccinale fornito come parametro sia presente nel database
+	/**
+	 * Metodo utile a verificare che il centro vaccinale esista
+	 * @param nomeCentro Variabile che contiene il nome del centro
+	 * @param queryControllo Variabile che contiene la query utile a controllare la corrispondenza sul database
+	 * @param stmt Oggetto di tipo Statement
+	 * @param rs Oggetto che contiene il result set con il risultato della query
+	 * @return Viene tornato true se il centro vaccinale esiste, altrimenti false
+	 * @throws SQLException Nel caso in cui il database restituisca un errore
+	 */
 	private boolean findCentroVac(String nomeCentro) throws SQLException {
 
 		String queryControllo = "select nomecentro from centrivaccinali where nomecentro ='" + nomeCentro + "'";
@@ -263,6 +425,17 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	}
 
 	//funzione per verificare che un utente si sia effettivamente vaccinato in un dato centro vaccinale, usata per permettergli di inserire eventi avversi
+	/**
+	 * Metodo utile a verificare che il cittadino si sia vaccinato nel centro vaccinale che dichiara
+	 * @param nomeCentro Variabile che contiene il nome del centro vaccinale
+	 * @param CF Variabile che contiene il codice fiscale del vaccinato
+	 * @param rs Oggetto che contiene il result set con il risultato della query
+	 * @param queryVerifica Variabile che contiene la query utile a verificare che l'utente sia effettivamente vaccinato
+	 * in quel determinato centro vaccinale
+	 * @param stmt Oggetto di tipo Statement
+	 * @return Viene ritornato ture se la verifica va a buon fine, altrimenti false
+	 * @throws SQLException Nel caso in cui il database restituisca un errore
+	 */
 	private boolean verificaVaccinato(String nomeCentro, String CF) throws SQLException {
 
 		ResultSet rs = null;
@@ -285,6 +458,18 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	}
 
 	//funzione per cercare un centro tramite nome e prelevarne le informazioni
+	/**
+	 * Metodo utile a cercare un centro vaccinale tramite il nome, inoltre vengono prelevate le informazioni corrispondenti
+	 * @param cercato Variabile che contiene il nome del centro vaccinale
+	 * @param vettore Array che contiene le informazioni del centro
+	 * @param trovato Variabile che contiene true nel caso in cui il centro vaccinale sia stato trovato, altrimenti false
+	 * @param rs Oggetto che contiene il result set con il risultato della query
+	 * @param queryRicerca Variabile che contiene la query che consente di ricercare il centro vaccinale nel database
+	 * @param stmt Oggetto di tipo Statement
+	 * @return Viene ritornato il vettore con le informazioni relative al centro, oppure null nel caso il centro non esista
+	 * @throws SQLException Nel caso in cui il database restituisca un errore
+	 * @throws CentroVaccinaleNonEsistente Nel caso il centro vaccinale non esista
+	 */
 	private String[] RicercaCentroNome(String cercato) throws SQLException, CentroVaccinaleNonEsistente {
 		new BufferedReader(new InputStreamReader(System.in));
 		String[] vettore = new String[8]; //vettore usato per salvare informazioni del centro
@@ -318,8 +503,20 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 			return vettore;
 
 	}
-
 	//funzione per inserire eventi avversi
+	/**Metodo utile ad inserire gli eventi avversi. Viene verificato in primo luogo che il cittadino sia stato vaccinato
+	 * nello specifico centro che dichiara. In caso positivo si procede alla registrazione dell'evento avverso nel database
+	 * 
+	 * @param nomeCentro Variabile che contiene il nome del centro vaccinale
+	 * @param sceltaEvento Variabile che contiene il tipo di evento avversi
+	 * @param gravita Variabile che contiene la gravità dell'evento avverso (da 1 a 5)
+	 * @param nota Variabile che contiene le eventuali note opzionali riguardo l'evento avverso
+	 * @param queryAddEvento Variabile che contiene la query utile a inserire l'evento avverso nel databse
+	 * @param stmt Oggetto di tipo Statement
+	 * @throws SQLException Nel caso in cui il database restituisca un errore
+	 * @throws CittadinoNonVaccinatoNelCentro Nel caso in cui il cittadino non sia stato vaccinato nel centro
+	 * specificato
+	 */
 	private void inserisciEventiAvversi(String nomeCentro, String sceltaEvento, int gravita, String nota)
 			throws SQLException, CittadinoNonVaccinatoNelCentro {
 
@@ -338,6 +535,18 @@ public class CentroVaccinaleServiceImpl implements CentroVaccinaleService {
 	}
 
 	//funzione per calcolare e fornire dati statistici relativi agli eventi avversi registrati in un dato centro vaccinale
+	/**
+	 * Metodo utile a calcolare le statistiche degli eventi avversi relative al centro
+	 * @param nomeCentro Variabile che contiene il nome del centro vaccinale
+	 * @param stmt Oggetto di tipo Statement
+	 * @param queryStatisticaString Variabile che contiene la query per prelevare dal database gli eventi avversi relativi
+	 * ad un centro vaccinale
+	 * @param rs Oggetto che contiene il result set con il risultato della query
+	 * @param info Variabile che contiene le statistiche del centro vaccinale
+	 * @return Vengono ritornate le statistiche relative al centro, oppure null in caso non siano stati registrati eventi
+	 * avversi
+	 * @throws SQLException Nel caso in cui il database restituisca un errore
+	 */
 	private String StatisticheEventiAvversi(String nomeCentro) throws SQLException {
 		Statement stmt = conn.createStatement();
 

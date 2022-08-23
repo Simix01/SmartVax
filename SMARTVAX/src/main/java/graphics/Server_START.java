@@ -20,6 +20,16 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
+/**
+ * Classe necessaria ad inizializzare la finestra della GUI utile ad accedere ad avviare il server, inserendo username
+ * e password.
+ * 
+ * @author Mirko Pomata
+ * @author Joshua Perez
+ * @author Simone Bernaschina
+ * @author Elena Perkoska
+ *
+ */
 public class Server_START implements ActionListener {
 
 	private JFrame frame;

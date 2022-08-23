@@ -73,7 +73,7 @@ public class InsertEvent_Frame implements ActionListener, MouseListener {
 		eventBox = new JComboBox();
 		eventBox.setModel(new DefaultComboBoxModel(new String[] { "Febbre", "Mal di testa", "Mal di gola",
 				"Spossatezza", "Dolori intestinali", "Dolori muscolari", "Tosse", "Perdita del gusto o dell'olfatto",
-				"Diarrea", "Difficolta'  respiratoria" }));
+				"Diarrea", "Difficolta' respiratoria" }));
 
 		JLabel lblNewLabel_1 = new JLabel("Evento avverso: ");
 
